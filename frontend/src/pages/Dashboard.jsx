@@ -16,9 +16,9 @@ const Dashboard = () => {
     const status = params.get('status');
     
     if (status === 'completed') {
-      // Clear the URL parameter
+      
       navigate('/dashboard', { replace: true });
-      // Show success message
+      
       toast.success('NGO documents signed successfully!');
     }
   }, [location, navigate]);

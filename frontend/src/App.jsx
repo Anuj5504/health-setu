@@ -10,11 +10,7 @@ import Header from './components/Header';
 import Dashboard from "./pages/Dashboard";
 import Preloader from "./components/Preloader";
 import { AuthProvider } from "./context/AuthContext";
-<<<<<<< HEAD
 import TalkAI from "./TalkAI";
-=======
-
->>>>>>> 6bf2689eda5bbfc35f018a4b5c934a961b430d8b
 function App() {
   const [loading, setLoading] = useState(true);
 
@@ -43,10 +39,7 @@ function App() {
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/login" element={<LoginForm />} />
               <Route path="/register" element={<Signup />} />
-<<<<<<< HEAD
               <Route path="/talk" element={<TalkAI />} />
-=======
->>>>>>> 6bf2689eda5bbfc35f018a4b5c934a961b430d8b
             </Routes>
           </Router>
         </AuthProvider>

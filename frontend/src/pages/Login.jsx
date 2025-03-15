@@ -1,16 +1,25 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { toast } from "react-hot-toast";
+import { toast } from "react-toastify";
 import { motion } from "framer-motion";
 import { FiMail, FiLock } from "react-icons/fi";
+import LoginImage from "../assets/login_image.jpeg";
+import axios from "axios";
+import { useAuth } from '../context/AuthContext';
+
+const API_URL = import.meta.env.VITE_API_URL;
 
 const LoginForm = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
   
   const [formData, setFormData] = useState({
     email: "",
     password: "",
+    role: "patient" // Default role
   });
+
+  const [loading, setLoading] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -20,11 +29,59 @@ const LoginForm = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    toast.success("Login button clicked!");
+    setLoading(true);
 
-    navigate("/dashboard"); 
+    try {
+      let endpoint = "";
+      // Choose endpoint based on role
+      switch(formData.role) {
+        case "patient":
+          endpoint = "/api/auth/login";
+          break;
+        case "doctor":
+          endpoint = "/api/auth/caregiver/login";
+          break;
+        case "admin":
+          endpoint = "/api/auth/healthpro/login";
+          break;
+        default:
+          endpoint = "/api/auth/login";
+      }
+
+      const response = await axios.post(`${API_URL}${endpoint}`, {
+        email: formData.email,
+        password: formData.password
+      });
+
+      // Store token in localStorage
+      localStorage.setItem("token", response.data.token);
+      
+      // Use the login function from context
+      const userData = {
+        ...response.data[formData.role === "patient" ? "Patient" : formData.role === "doctor" ? "doctor" : "admin"],
+        role: formData.role
+      };
+      
+      login(userData);
+      toast.success(`Welcome back!`);
+      
+      // Redirect based on role
+      if (formData.role === "patient") {
+        navigate("/dashboard");
+      } else if (formData.role === "doctor") {
+        navigate("/doctor-dashboard");
+      } else {
+        navigate("/admin-dashboard");
+      }
+
+    } catch (error) {
+      console.error("Login error:", error);
+      toast.error(error.response?.data?.msg || "Login failed. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -35,7 +92,7 @@ const LoginForm = () => {
           {/* Left side - Illustration */}
           <div className="hidden lg:flex lg:w-1/2 items-center justify-center p-8 bg-blue-50 rounded-l-xl">
             <img 
-              src="/helpinghand.png" 
+              src={LoginImage}
               alt="Login" 
               className="w-full max-w-sm"
             />
@@ -70,8 +127,6 @@ const LoginForm = () => {
                 </div>
               </div>
 
-                
-
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Password
@@ -90,31 +145,34 @@ const LoginForm = () => {
               </div>
 
               <div className="flex gap-4 my-6">
-                                      {["user", "volunteer", "ngo"].map((role) => (
-                                        <motion.button
-                                          key={role}
-                                          whileHover={{ scale: 1.02 }}
-                                          whileTap={{ scale: 0.98 }}
-                                          type="button"
-                                          onClick={() => setFormData({ ...formData, role })}
-                                          className={`flex-1 py-3 rounded-lg font-medium transition-colors duration-200 ${
-                                            formData.role === role
-                                              ? "bg-blue-500 text-white"
-                                              : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                                          }`}
-                                        >
-                                          {role.charAt(0).toUpperCase() + role.slice(1)}
-                                        </motion.button>
-                                      ))}
-                </div>
+                {["patient", "doctor", "admin"].map((role) => (
+                  <motion.button
+                    key={role}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    type="button"
+                    onClick={() => setFormData({ ...formData, role })}
+                    className={`flex-1 py-3 rounded-lg font-medium transition-colors duration-200 ${
+                      formData.role === role
+                        ? "bg-blue-500 text-white"
+                        : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                    }`}
+                  >
+                    {role.charAt(0).toUpperCase() + role.slice(1)}
+                  </motion.button>
+                ))}
+              </div>
 
               <motion.button
                 whileHover={{ scale: 1.01 }}
                 whileTap={{ scale: 0.99 }}
                 type="submit"
-                className="w-full bg-blue-500 text-white py-3 rounded-lg font-medium hover:bg-blue-600 transition-colors duration-200 shadow-md"
+                disabled={loading}
+                className={`w-full bg-blue-500 text-white py-3 rounded-lg font-medium hover:bg-blue-600 transition-colors duration-200 shadow-md ${
+                  loading ? 'opacity-70 cursor-not-allowed' : ''
+                }`}
               >
-                Sign In
+                {loading ? 'Signing in...' : 'Sign In'}
               </motion.button>
 
               <div className="text-center mt-6">

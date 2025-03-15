@@ -8,8 +8,8 @@ import Signup from "./pages/Signup"
 import HomePage from './pages/HomePage';
 import Header from './components/Header';
 import Dashboard from "./pages/Dashboard";
-// import Preloader from "./components/Preloader";
-// import { AuthProvider } from "./context/AuthContext";
+import Preloader from "./components/Preloader";
+import { AuthProvider } from "./context/AuthContext";
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -25,10 +25,12 @@ function App() {
 
   return (
     <>
-      
+      <AnimatePresence mode='wait'>
+        {loading && <Preloader setLoading={setLoading} />}
+      </AnimatePresence>
       
       {!loading && (
-        // <AuthProvider>
+        <AuthProvider>
           <Router>
             <ToastContainer position="top-right" autoClose={3000} />
             <Header />
@@ -39,7 +41,7 @@ function App() {
               <Route path="/register" element={<Signup />} />
             </Routes>
           </Router>
-        // </AuthProvider>
+        </AuthProvider>
       )}
     </>
   );

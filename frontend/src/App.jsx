@@ -12,6 +12,9 @@ import Preloader from "./components/Preloader";
 import { AuthProvider } from "./context/AuthContext";
 import AdminPage from "./pages/AdminPage";
 import TalkAI from "./TalkAI";
+import Preloader from "./components/Preloader";
+import { AuthProvider } from "./context/AuthContext";
+import TalkAI from "./TalkAI";
 function App() {
   const [loading, setLoading] = useState(true);
 
@@ -29,8 +32,12 @@ function App() {
       <AnimatePresence mode='wait'>
         {loading && <Preloader setLoading={setLoading} />}
       </AnimatePresence>
+      <AnimatePresence mode='wait'>
+        {loading && <Preloader setLoading={setLoading} />}
+      </AnimatePresence>
       
       {!loading && (
+        <AuthProvider>
         <AuthProvider>
           <Router>
             <ToastContainer position="top-right" autoClose={3000} />
@@ -42,8 +49,10 @@ function App() {
               <Route path="/login" element={<LoginForm />} />
               <Route path="/register" element={<Signup />} />
               <Route path="/talk" element={<TalkAI />} />
+              <Route path="/talk" element={<TalkAI />} />
             </Routes>
           </Router>
+        </AuthProvider>
         </AuthProvider>
       )}
     </>

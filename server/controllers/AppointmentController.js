@@ -1,20 +1,16 @@
 const express = require('express');
 const dotenv = require("dotenv");
-const { GoogleGenerativeAI } = require("@google/generative-ai");
+const Groq = require('groq-sdk');
 const Appointment = require('../models/AppoinmentModel');
 
 dotenv.config();
 
-// Check for required environment variable
-if (!process.env.GEMINI_API_KEY) {
-    throw new Error('GEMINI_API_KEY is required in environment variables');
-}
+// Initialize Groq
+const groq = new Groq({
+    apiKey: process.env.GROQ_API_KEY
+});
 
-// Initialize Gemini AI
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-
-const SYSTEM_PROMPT = `You are Sarah, a friendly medical assistant. Have a natural conversation.
+const SYSTEM_PROMPT = `You are a friendly medical assistant. Have a natural conversation.
 
 Current conversation stage: {stage}
 
@@ -63,12 +59,30 @@ const sessions = {};
 
 async function getAIResponse(prompt) {
     try {
-        const result = await model.generateContent(prompt);
-        const response = await result.response;
-        return response.text();
+        const chatCompletion = await groq.chat.completions.create({
+            messages: [
+                {
+                    role: "system",
+                    content: "You are Sarah, a medical assistant who helps patients schedule appointments."
+                },
+                {
+                    role: "user",
+                    content: prompt
+                }
+            ],
+            model: "llama-3.3-70b-versatile",
+            temperature: 0.7,
+            max_tokens: 1024,
+            top_p: 1,
+            stream: false
+        });
+
+        const response = chatCompletion.choices[0].message.content;
+        console.log("AI Response:", response);
+        return response;
     } catch (error) {
         console.error("AI API Error:", error);
-        throw new Error("Failed to get AI response");
+        return "I apologize, but I'm having trouble processing that right now. Could you please try again?";
     }
 }
 

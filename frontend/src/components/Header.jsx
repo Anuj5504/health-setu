@@ -4,45 +4,41 @@ import { motion, AnimatePresence } from "framer-motion";
 import { HiMenu, HiX } from "react-icons/hi";
 import { FiUser, FiLogOut } from "react-icons/fi";
 import { MdDashboard } from "react-icons/md";
-
-// import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/AuthContext';
 
 function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const navigate = useNavigate();
-//   const { user, logout } = useAuth();
+  const { user, logout } = useAuth();
 
-const user="";
-const logout=()=>{};
+  const handleLogout = () => {
+    logout();
+    setShowDropdown(false);
+    navigate('/');
+  };
+
+  const getDashboardLink = () => {
+    if (!user) return '/dashboard';
+    
+    switch (user.role) {
+      case "patient":
+        return "/dashboard";
+      case "doctor":
+        return "/doctor-dashboard";
+      case "admin":
+        return "/admin-dashboard";
+      default:
+        return "/dashboard";
+    }
+  };
 
   const navLinks = [
     { name: "Home", path: "/" },
-    { name: "Report", path: "/report-incident" },
-    { name: "Volunteer", path: "/volunteer" },
+    { name: "Services", path: "/services" },
     { name: "About", path: "/about" },
     { name: "Contact", path: "/contact" },
   ];
-
-//   const handleLogout = async () => {
-//     try {
-//       await logout();
-//       setShowDropdown(false); // Close dropdown after logout
-//     } catch (error) {
-//       console.error("Logout error:", error);
-//     }
-//   };
-
-  const getDashboardLink = () => {
-    switch (user?.role) {
-      case "ngo":
-        return "/dashboard";
-      case "volunteer":
-        return "/voldash";
-      default:
-        return "/user-dashboard";
-    }
-  };
 
   return (
     <header className="fixed w-full top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-200">
@@ -103,6 +99,7 @@ const logout=()=>{};
                       <Link
                         to={getDashboardLink()}
                         className="flex items-center px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-500"
+                        onClick={() => setShowDropdown(false)}
                       >
                         <MdDashboard className="w-5 h-5 mr-2" />
                         Dashboard

@@ -67,7 +67,7 @@ exports.getAllPrescription = async (req, res) => {
                 if (durationDays === 0) return;
 
                 // Calculate based on duration unit
-                switch (medicine.duration?.durationUnit) {
+                switch (medicine.duration?.durationUnit?.toLowerCase()) {
                     case 'day':
                     case 'day\'s':
                         totalCount *= durationDays;

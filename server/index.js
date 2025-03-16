@@ -22,6 +22,7 @@ app.use('/api/healthpros', require('./routes/healthproRoutes'));
 app.use('/api/caregivers', require('./routes/careGiverRoutes'));
 app.use('/api/appointments', require('./routes/appoinmentRoutes'));
 app.use('/api/goals', require('./routes/goalRoutes'));
+app.use('/api/inventory',require('./routes/InventoryRoutes'));
 
 app.post("/api/email", async (req, res) => {
     const { to, subject, text } = req.body; 

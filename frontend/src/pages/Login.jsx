@@ -69,11 +69,11 @@ const LoginForm = () => {
       
       // Redirect based on role
       if (formData.role === "patient") {
-        navigate("/dashboard");
+        navigate("/medicine");
       } else if (formData.role === "doctor") {
-        navigate("/doctor-dashboard");
+        navigate("/docdashboard");
       } else {
-        navigate("/admin-dashboard");
+        navigate("/admindashboard");
       }
 
     } catch (error) {

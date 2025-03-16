@@ -256,8 +256,19 @@ const getPatientAppointments = async (req, res) => {
     }
 };
 
+const getAppointments = async (req, res) => {
+    try {
+        const appointments = await Appointment.find()
+            .sort({ appointmentDate: -1 });
+        res.json(appointments);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
 module.exports = {
     startAIConversation,
     processAIConversation,
-    getPatientAppointments
+    getPatientAppointments,
+    getAppointments
 };

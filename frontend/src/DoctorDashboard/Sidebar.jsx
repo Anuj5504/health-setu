@@ -15,19 +15,19 @@ function Sidebar({ isOpen }) {
     {
       title: 'Dashboard',
       icon: <HomeIcon className="w-6 h-6" />,
-      path: '/dashboard',
+      path: '/docdashboard',
       status: 'active'
     },
     {
-      title: 'Total Patients',
+      title: 'Appointments',
       icon: <ClipboardDocumentListIcon className="w-6 h-6" />,
-      path: '/dashboard/incidents',
+      path: '/appointments',
       status: 'active'
     },
     {
       title: 'Notifications',
       icon: <BellIcon className="w-6 h-6" />,
-      path: '/dashboard/notifications',
+      path: '/',
       status: 'active'
     },
     // {
@@ -52,44 +52,80 @@ function Sidebar({ isOpen }) {
 
   return (
     <aside className={`
-      ${isOpen ? 'translate-x-0' : '-translate-x-full'}
+      ${isOpen ? 'translate-x-0 opacity-100' : '-translate-x-full opacity-0 lg:opacity-100'}
       lg:translate-x-0
-      fixed lg:relative
-      inset-y-0 left-0
+      fixed lg:sticky
+      top-20
+      h-[calc(100vh-5rem)] 
       w-64
       bg-white
       border-r
       shadow-lg lg:shadow-none
       transform
-      transition-transform
+      transition-all
       duration-300
       ease-in-out
       z-30
+      overflow-hidden
+      flex flex-col
     `}>
-      <div className="h-20 flex items-center justify-center border-b">
-        <h2 className="text-xl font-bold text-blue-500">Dashboard</h2>
-      </div>
+      {/* <div className="h-20 flex-shrink-0 flex items-center justify-center border-b bg-gradient-to-r from-blue-50 to-white">
+        <h2 className="text-xl font-bold text-blue-600 transform transition-transform hover:scale-105">
+          Dashboard
+        </h2>
+      </div> */}
 
-      <nav className="mt-6">
-        <div className="px-4 space-y-2">
+      <nav className="flex-1 overflow-y-auto">
+        <div className="px-4 space-y-1 py-6">
           {menuItems.map((item) => {
             const isActive = location.pathname === item.path;
             
-            return (
-              <div
+            return item.status === 'active' ? (
+              <Link
                 key={item.title}
-                onClick={() => item.status !== 'active' && handleItemClick(item)}
+                to={item.path}
                 className={`
-                  flex items-center px-4 py-3 rounded-lg cursor-pointer
-                  transition-colors duration-200
-                  ${isActive ? 'bg-blue-50 text-blue-600' : 'text-gray-900'}
-                  ${item.status === 'active' 
-                    ? 'hover:bg-gray-50 hover:text-gray-900' 
-                    : 'opacity-60 hover:bg-gray-50'}
+                  group
+                  flex items-center px-4 py-3 rounded-lg
+                  transition-all duration-200 ease-in-out
+                  transform hover:scale-[1.02]
+                  ${isActive 
+                    ? 'bg-blue-50 text-blue-600 shadow-sm' 
+                    : 'text-gray-600 hover:bg-gray-50 hover:text-blue-600'}
                 `}
               >
-                <div className="flex items-center gap-4">
-                  {item.icon}
+                <div className="flex items-center gap-4 w-full">
+                  <span className={`
+                    transition-transform duration-200 ease-in-out
+                    group-hover:scale-110
+                    ${isActive ? 'text-blue-600' : 'text-gray-500'}
+                  `}>
+                    {item.icon}
+                  </span>
+                  <span className={`
+                    font-medium transition-colors duration-200
+                    ${isActive ? 'text-blue-600' : ''}
+                  `}>
+                    {item.title}
+                  </span>
+                </div>
+              </Link>
+            ) : (
+              <div
+                key={item.title}
+                onClick={() => handleItemClick(item)}
+                className={`
+                  group
+                  flex items-center px-4 py-3 rounded-lg cursor-pointer
+                  transition-all duration-200 ease-in-out
+                  opacity-60 hover:opacity-80
+                  ${isActive ? 'bg-gray-100' : 'hover:bg-gray-50'}
+                `}
+              >
+                <div className="flex items-center gap-4 w-full">
+                  <span className="transition-transform duration-200 ease-in-out group-hover:scale-110">
+                    {item.icon}
+                  </span>
                   <span className="font-medium">{item.title}</span>
                 </div>
               </div>

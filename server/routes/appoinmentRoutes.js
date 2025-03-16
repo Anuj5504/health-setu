@@ -4,7 +4,8 @@ const auth = require('../middleware/auth');
 const {
     startAIConversation,
     processAIConversation,
-    getPatientAppointments
+    getPatientAppointments,
+    getAppointments
 } = require('../controllers/AppointmentController');
 
 // AI Conversation endpoints
@@ -12,6 +13,7 @@ router.post('/start', startAIConversation);
 router.post('/talk', processAIConversation);
 
 // Patient appointments
-router.get('/patient/:patientId', auth, getPatientAppointments);
+router.get('/patient/:patientId',getPatientAppointments);
+router.get('/patient', getAppointments);
 
 module.exports = router;

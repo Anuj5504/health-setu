@@ -1,103 +1,136 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
-  HomeIcon,
-  ClipboardDocumentListIcon,
-  BellIcon,
+  CalendarIcon,
   ChartBarIcon,
-  Cog6ToothIcon,
+  UserIcon,
+  ClipboardDocumentListIcon,
+  XMarkIcon,
+  Bars3Icon
 } from '@heroicons/react/24/outline';
 
-function Sidebar({ isOpen }) {
+function Sidebar({ isOpen, setIsOpen }) {
   const location = useLocation();
   const navigate = useNavigate();
   
   const menuItems = [
     {
-      title: 'Dashboard',
-      icon: <HomeIcon className="w-6 h-6" />,
-      path: '/dashboard',
-      status: 'active'
-    },
-    {
-      title: 'Total Incidents',
+      title: 'Medicine',
       icon: <ClipboardDocumentListIcon className="w-6 h-6" />,
-      path: '/dashboard/incidents',
+      path: '/medicine',
       status: 'active'
     },
     {
-      title: 'Notifications',
-      icon: <BellIcon className="w-6 h-6" />,
-      path: '/dashboard/notifications',
+      title: 'Appointments',
+      icon: <CalendarIcon className="w-6 h-6" />,
+      path: '/PAppointments',
       status: 'active'
     },
     {
-      title: 'Analytics',
+      title: 'Fitbit Data',
       icon: <ChartBarIcon className="w-6 h-6" />,
-      path: '/dashboard/analytics',
-      status: 'coming-soon'
+      path: '/fitbit-data',
+      status: 'active'
     },
     {
-      title: 'Settings',
-      icon: <Cog6ToothIcon className="w-6 h-6" />,
-      path: '/dashboard/settings',
-      status: 'under-development'
+      title: 'Doctor Profile',
+      icon: <UserIcon className="w-6 h-6" />,
+      path: '/doctor-profile',
+      status: 'active'
     }
   ];
 
-  const handleItemClick = (item) => {
-    if (item.status !== 'active') {
-      navigate(`${item.path}?maintenance=true&title=${item.title}`);
-    }
-  };
-
   return (
-    <aside className={`
-      ${isOpen ? 'translate-x-0' : '-translate-x-full'}
-      lg:translate-x-0
-      fixed lg:relative
-      inset-y-0 left-0
-      w-64
-      bg-white
-      border-r
-      shadow-lg lg:shadow-none
-      transform
-      transition-transform
-      duration-300
-      ease-in-out
-      z-30
-    `}>
-      <div className="h-20 flex items-center justify-center border-b">
-        <h2 className="text-xl font-bold text-blue-500"> Dashboard</h2>
-      </div>
+    <>
+      {/* Mobile Menu Button */}
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="lg:hidden fixed top-4 left-4 z-30 p-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+      >
+        {isOpen ? (
+          <XMarkIcon className="h-6 w-6" />
+        ) : (
+          <Bars3Icon className="h-6 w-6" />
+        )}
+      </button>
 
-      <nav className="mt-6">
-        <div className="px-4 space-y-2">
-          {menuItems.map((item) => {
-            const isActive = location.pathname === item.path;
-            
-            return (
-              <div
-                key={item.title}
-                onClick={() => item.status !== 'active' && handleItemClick(item)}
-                className={`
-                  flex items-center px-4 py-3 rounded-lg cursor-pointer
-                  transition-colors duration-200
-                  ${isActive ? 'bg-blue-50 text-blue-600' : 'text-gray-900'}
-                  ${item.status === 'active' 
-                    ? 'hover:bg-gray-50 hover:text-gray-900' 
-                    : 'opacity-60 hover:bg-gray-50'}
-                `}
-              >
-                <div className="flex items-center gap-4">
-                  {item.icon}
-                  <span className="font-medium">{item.title}</span>
-                </div>
-              </div>
-            );
-          })}
+      {/* Overlay for mobile */}
+      {isOpen && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 z-20 lg:hidden transition-opacity duration-300"
+          onClick={() => setIsOpen(false)}
+        />
+      )}
+      
+      {/* Sidebar */}
+      <aside className={`
+        fixed top-0 left-0 h-full
+        w-[280px] bg-white border-r
+        shadow-lg
+        transform transition-all duration-300 ease-in-out
+        ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+        z-30 lg:z-10
+        flex flex-col
+      `}>
+        {/* Sidebar Header */}
+        <div className="h-16 flex items-center justify-between px-6 border-b bg-white">
+          <h2 className="text-xl font-bold text-blue-600">Patient Dashboard</h2>
+          {/* Close button for mobile */}
+          <button
+            onClick={() => setIsOpen(false)}
+            className="lg:hidden p-2 rounded-md text-gray-500 hover:bg-gray-100"
+          >
+            <XMarkIcon className="h-6 w-6" />
+          </button>
         </div>
-      </nav>
-    </aside>
+
+        {/* Navigation */}
+        <nav className="flex-1 overflow-y-auto pt-4">
+          <div className="px-4 space-y-2">
+            {menuItems.map((item) => {
+              const isActive = location.pathname === item.path;
+              
+              return (
+                <Link
+                  key={item.title}
+                  to={item.path}
+                  onClick={() => {
+                    if (window.innerWidth < 1024) {
+                      setIsOpen(false);
+                    }
+                  }}
+                  className={`
+                    flex items-center px-4 py-3 rounded-lg cursor-pointer
+                    transition-all duration-200 ease-in-out
+                    transform hover:scale-[1.02]
+                    ${isActive 
+                      ? 'bg-blue-50 text-blue-600 shadow-sm' 
+                      : 'text-gray-600 hover:bg-gray-50 hover:text-blue-600'}
+                  `}
+                >
+                  <div className="flex items-center gap-4">
+                    <span className={`
+                      transition-transform duration-200 ease-in-out
+                      group-hover:scale-110
+                      ${isActive ? 'text-blue-600' : 'text-gray-500'}
+                    `}>
+                      {item.icon}
+                    </span>
+                    <span className={`
+                      font-medium transition-colors duration-200
+                      ${isActive ? 'text-blue-600' : ''}
+                    `}>
+                      {item.title}
+                    </span>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        </nav>
+
+      
+      </aside>
+    </>
   );
 }
 

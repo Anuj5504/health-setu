@@ -44,7 +44,7 @@ function HeroSection() {
             <p className="text-lg lg:text-xl text-gray-600 mb-8 font-inter max-w-xl">
               Optimizing hospital operations for seamless patient care. Schedule appointments, manage inventory, and ensure timely treatment with our integrated healthcare system.            </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-12">
-              <Link to="/report-incident">
+              <Link to="/talk">
                 <motion.button 
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}

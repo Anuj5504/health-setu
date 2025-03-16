@@ -7,7 +7,7 @@ import { BiSolidHeart } from "react-icons/bi";
 function Footer() {
   const quickLinks = [
     { name: "Home", path: "/" },
-    { name: "Book Appointment", path: "/report-incident" },
+    { name: "Book Appointment", path: "talk" },
     { name: "Health Tracking", path: "/volunteer" },
     { name: "About Us", path: "/about" },
     { name: "Contact", path: "/contact" },

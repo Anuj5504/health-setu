@@ -46,7 +46,7 @@ function GetInvolved() {
               <p className="text-gray-600 mb-6">
               Need medical assistance? Schedule an AI-powered appointment with a doctor and get the care you deserve.
               </p>
-              <Link to="/report-incident">
+              <Link to="/talk">
                 <motion.button
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}

@@ -9,7 +9,7 @@ const getPatients = async (req, res) => {
         const patients = await Patient.find()
             .populate({
                 path: 'caregiver',
-                select: 'name email' // Only get necessary fields
+                select: 'name email mobileno address city' 
             });
         res.json(patients);
     } catch (err) {
@@ -22,12 +22,10 @@ const getPatientById = async (req, res) => {
         const { id } = req.params;
         const patient = await Patient
             .findById(id)
-            .populate('family')
             .populate({
                 path: 'caregiver',
-                select: 'name email contact specialization' // Only select needed fields
+                select: 'name email contact city' // Only select needed fields
             })
-            .populate('disease');
 
         if (!patient) {
             return res.status(404).json({ msg: "Patient not found" });

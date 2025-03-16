@@ -25,9 +25,9 @@ function Header() {
       case "patient":
         return "/dashboard";
       case "doctor":
-        return "/doctor-dashboard";
+        return "/docdashboard";
       case "admin":
-        return "/admin-dashboard";
+        return "/admindashboard";
       default:
         return "/dashboard";
     }
@@ -35,7 +35,6 @@ function Header() {
 
   const navLinks = [
     { name: "Home", path: "/" },
-    { name: "Services", path: "/services" },
     { name: "About", path: "/about" },
     { name: "Contact", path: "/contact" },
   ];

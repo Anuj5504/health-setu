@@ -11,7 +11,7 @@ function Features() {
       description: "AI-powered scheduling system ensures quick and efficient doctor-patient appointments with real-time updates.",
       color: "from-blue-500/10 to-blue-500/5",
       iconColor: "text-blue-600",
-      link: "/report-incident"
+      link: "/talk"
     },
     {
       icon: <FaHandsHelping className="w-6 h-6" />,

@@ -1,16 +1,16 @@
-import { useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import DashboardLayout from '../DoctorDashboard/DashboardLayout';
 import { motion } from "framer-motion";
 import PatientInfo from '../PatientInfoDoc/PatientInfo';
-import AddTask from '../PatientInfoDoc/Add_task';
+import MedicineReminder from '../PatientInfoDoc/Add_task';
 import Fitbit from '../PatientInfoDoc/Fitbit';
-import MedicineReminder from '../PatientInfoDoc/MedicineReminder';
 
 const DocPatientshealth = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { id } = useParams();
   const [activeComponent, setActiveComponent] = useState('Patient Info');
   const [formData, setFormData] = useState({
     role: 'Patient Info'
@@ -31,18 +31,29 @@ const DocPatientshealth = () => {
     setFormData({ ...formData, role: componentName });
   };
 
+  const getIcon = (componentName) => {
+    switch(componentName) {
+      case 'Patient Info':
+        return '👤';
+      case 'Medicine Reminder':
+        return '💊';
+      case 'FitBit Data':
+        return '⌚';
+      default:
+        return '📋';
+    }
+  };
+
   const renderComponent = () => {
     switch (activeComponent) {
       case 'Patient Info':
-        return <PatientInfo />;
-      case 'Add task':
-        return <AddTask />;
-      case 'FitBit Data':
-        return <Fitbit />;
+        return <PatientInfo patientId={id} />;
       case 'Medicine Reminder':
         return <MedicineReminder />;
+      case 'FitBit Data':
+        return <Fitbit />;
       default:
-        return <PatientInfo />;
+        return <PatientInfo patientId={id} />;
     }
   };
 
@@ -50,9 +61,9 @@ const DocPatientshealth = () => {
     <DashboardLayout>
       <div className="space-y-6 p-4 md:p-6">
         <h1 className="text-xl md:text-2xl font-bold text-gray-900">Patient Health Details</h1>
-      
+
         <div className="flex gap-4 my-6">
-          {["Patient Info", "Add task", "Medicine Reminder", "FitBit Data"].map((componentName) => (
+          {["Patient Info", "Medicine Reminder", "FitBit Data"].map((componentName) => (
             <motion.button
               key={componentName}
               whileHover={{ scale: 1.02 }}
@@ -65,11 +76,14 @@ const DocPatientshealth = () => {
                   : "bg-gray-100 text-gray-600 hover:bg-gray-200"
               }`}
             >
-              {componentName}
+              <span className="flex items-center justify-center gap-2">
+                <span>{getIcon(componentName)}</span>
+                <span>{componentName}</span>
+              </span>
             </motion.button>
           ))}
         </div>
-        
+
         <div className="mt-6">
           {renderComponent()}
         </div>

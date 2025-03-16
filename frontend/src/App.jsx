@@ -27,6 +27,8 @@ import Medicine from './pages/Medicine';
 import MaintenancePage from './DashBoardCompo/MaintenancePage';
 import ConnectCallback from './pages/ConnectCallback';
 import CreatePrescription from "./Prescription/CreatePrescription";
+import Prescription from "./PatientInfoDoc/Prescriptions";
+import PatientPrescriptions from './pages/PatientPrescriptions';
 
 const App = () => {
   const [loading, setLoading] = useState(true);
@@ -58,8 +60,7 @@ const App = () => {
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/talk" element={<TalkAI />} />
             <Route path="/appointments" element={<Appointments />} />
-            <Route path="/createprescription" element={<CreatePrescription />} />
-
+            <Route path="/createprescription/:patientId" element={<CreatePrescription />} />
             {/* Inventory route */}
 
             <Route path="/admin/inventory/" element={<InventoryDashboard />} />
@@ -73,6 +74,7 @@ const App = () => {
             <Route path="/medicine" element={<Medicine />} />
             <Route path="/maintenance" element={<MaintenancePage />} />
             <Route path="/connect" element={<ConnectCallback />} />
+            <Route path="/patient-prescriptions/:id" element={<PatientPrescriptions />} />
           </Routes>
         </AuthProvider>
       </Suspense>

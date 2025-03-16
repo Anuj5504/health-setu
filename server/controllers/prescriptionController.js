@@ -104,4 +104,21 @@ exports.deletePrescription = async (req, res) => {
             error: error.message
         });
     }
+};
+
+// Add this function to your existing controller
+exports.getPatientPrescriptions = async (req, res) => {
+    try {
+        const prescriptions = await Prescription.find({ patientId: req.params.patientId })
+            .sort({ createdAt: -1 });
+        res.status(200).json({
+            success: true,
+            data: prescriptions
+        });
+    } catch (error) {
+        res.status(400).json({
+            success: false,
+            error: error.message
+        });
+    }
 }; 

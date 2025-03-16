@@ -4,14 +4,16 @@ import PrescriptionPreview from "./PrescriptionPreview";
 import html2pdf from "html2pdf.js";
 import { uploadPdf, deletePdf } from "../utils/uploadPdf";
 import { toast } from 'react-toastify';
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { FaAnglesLeft } from "react-icons/fa6";
 import { jwtDecode } from "jwt-decode";
 
 const CreatePrescription = () => {
+  const { patientId } = useParams();
   const [prescriptionId, setPrescriptionId] = useState(null);
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
+  const [patientData, setPatientData] = useState(null);
 
   const [prescriptionData, setPrescriptionData] = useState({
     patientName: "",
@@ -76,6 +78,41 @@ const CreatePrescription = () => {
       navigate("/");
     }
   }, [navigate]);
+
+  useEffect(() => {
+    const fetchPatientData = async () => {
+      try {
+        const response = await fetch(`http://localhost:5000/api/patients/${patientId}`, {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
+        });
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch patient data');
+        }
+
+        const data = await response.json();
+        setPatientData(data);
+        
+        setPrescriptionData(prev => ({
+          ...prev,
+          patientName: data.name || '',
+          age: data.age || '',
+          sex: data.gender || '',
+          contact: data.contact || '',
+          city: data.city || '',
+        }));
+      } catch (error) {
+        console.error('Error fetching patient data:', error);
+        toast.error('Failed to load patient data');
+      }
+    };
+
+    if (patientId) {
+      fetchPatientData();
+    }
+  }, [patientId]);
 
   const generatePrescriptionPDF = () => {
     const element = prescriptionPreviewRef.current;
@@ -194,11 +231,12 @@ const CreatePrescription = () => {
       const pdfBlob = await generatePrescriptionPDF();
       const uploadResult = await uploadPdf(pdfBlob);
 
-
       // First save prescription data to backend
       const prescriptionPayload = {
         prescriptionId: newPrescriptionId,
         doctorId: user?._id,
+        patientId: patientId,
+        patientEmail: patientData?.email,
         patientDetails: {
           name: prescriptionData?.patientName,
           age: prescriptionData?.age,
@@ -262,7 +300,7 @@ const CreatePrescription = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          to: "darshangodase10@gmail.com",
+          to: patientData?.email || "darshangodase10@gmail.com",
           subject: "Your Medical Consultation Report - HealthSetu",
           text: `Dear ${prescriptionData?.patientName || 'Patient'},
     
@@ -304,7 +342,7 @@ const CreatePrescription = () => {
         {/* Header */}
         <div className="flex justify-left mb-6">
           <button
-            onClick={() => navigate("/doctor/dashboard?tab=prescriptions")}
+            onClick={() => navigate("/docdashboard")}
             className="bg-blue-500 text-white p-4 py-2 rounded-lg hover:bg-blue-600 transition flex items-center justify-center gap-1"
           >
             <FaAnglesLeft />

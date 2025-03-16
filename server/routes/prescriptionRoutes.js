@@ -5,7 +5,8 @@ const {
     getDoctorPrescriptions,
     getPrescriptionById,
     updatePrescriptionPDF,
-    deletePrescription
+    deletePrescription,
+    getPatientPrescriptions
 } = require('../controllers/prescriptionController');
 
 // Protected routes (require authentication)
@@ -24,5 +25,8 @@ router.patch('/pdf', updatePrescriptionPDF);
 
 // Delete prescription
 router.delete('/:id', deletePrescription);
+
+// Add this route to your existing routes
+router.get('/patient/:patientId', getPatientPrescriptions);
 
 module.exports = router; 

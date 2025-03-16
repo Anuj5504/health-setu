@@ -11,6 +11,15 @@ const prescriptionSchema = new mongoose.Schema({
         ref: 'User',
         required: true
     },
+    patientId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Patient',
+        required: true
+    },
+    patientEmail: {
+        type: String,
+        required: true
+    },
     patientDetails: {
         name: {
             type: String,

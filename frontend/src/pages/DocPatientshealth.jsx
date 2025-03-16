@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import PatientInfo from '../PatientInfoDoc/PatientInfo';
 import MedicineReminder from '../PatientInfoDoc/Add_task';
 import Fitbit from '../PatientInfoDoc/Fitbit';
+import Prescriptions from '../PatientInfoDoc/Prescriptions';
 
 const DocPatientshealth = () => {
   const location = useLocation();
@@ -39,6 +40,8 @@ const DocPatientshealth = () => {
         return '💊';
       case 'FitBit Data':
         return '⌚';
+      case 'Prescriptions':
+        return '📋';
       default:
         return '📋';
     }
@@ -52,6 +55,8 @@ const DocPatientshealth = () => {
         return <MedicineReminder />;
       case 'FitBit Data':
         return <Fitbit />;
+      case 'Prescriptions':
+        return <Prescriptions patientId={id} />;
       default:
         return <PatientInfo patientId={id} />;
     }
@@ -62,13 +67,13 @@ const DocPatientshealth = () => {
       <div className="space-y-6 p-4 md:p-6">
         <h1 className="text-xl md:text-2xl font-bold text-gray-900">Patient Health Details</h1>
         <button
-            onClick={() => navigate('/createprescription')}
+            onClick={() => navigate(`/createprescription/${id}`)}
             className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200"
           >
             Create Prescription
         </button>
         <div className="flex gap-4 my-6">
-          {["Patient Info", "Medicine Reminder", "FitBit Data"].map((componentName) => (
+          {["Patient Info", "Medicine Reminder", "FitBit Data", "Prescriptions"].map((componentName) => (
             <motion.button
               key={componentName}
               whileHover={{ scale: 1.02 }}

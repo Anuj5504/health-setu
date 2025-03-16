@@ -5,12 +5,31 @@ import {
   UserIcon,
   ClipboardDocumentListIcon,
   XMarkIcon,
-  Bars3Icon
+  Bars3Icon,
+  DocumentTextIcon
 } from '@heroicons/react/24/outline';
+import { useEffect, useState } from 'react';
+import { jwtDecode } from 'jwt-decode';
 
 function Sidebar({ isOpen, setIsOpen }) {
   const location = useLocation();
   const navigate = useNavigate();
+  const [userId, setUserId] = useState(null);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      try {
+        const decodedToken = jwtDecode(token);
+        const userData = decodedToken.user;
+        if (userData) {
+          setUserId(userData._id);
+        }
+      } catch (error) {
+        console.error("Error decoding token:", error);
+      }
+    }
+  }, []);
   
   const menuItems = [
     {
@@ -32,12 +51,25 @@ function Sidebar({ isOpen, setIsOpen }) {
       status: 'active'
     },
     {
+      title: 'Prescriptions',
+      icon: <DocumentTextIcon className="w-6 h-6" />,
+      path: `/patient-prescriptions/${userId}`,
+      status: 'active'
+    },
+    {
       title: 'Doctor Profile',
       icon: <UserIcon className="w-6 h-6" />,
       path: '/doctor-profile',
       status: 'active'
     }
   ];
+
+  const filteredMenuItems = menuItems.filter(item => {
+    if (item.title === 'Prescriptions' && !userId) {
+      return false;
+    }
+    return true;
+  });
 
   return (
     <>
@@ -86,7 +118,7 @@ function Sidebar({ isOpen, setIsOpen }) {
         {/* Navigation */}
         <nav className="flex-1 overflow-y-auto pt-4">
           <div className="px-4 space-y-2">
-            {menuItems.map((item) => {
+            {filteredMenuItems.map((item) => {
               const isActive = location.pathname === item.path;
               
               return (
@@ -127,8 +159,6 @@ function Sidebar({ isOpen, setIsOpen }) {
             })}
           </div>
         </nav>
-
-      
       </aside>
     </>
   );

@@ -77,7 +77,7 @@ function GetInvolved() {
               <p className="text-gray-600 mb-6">
               Track your health effortlessly. Connect your Fitbit and monitor steps, calories, and vitals in real-time.
               </p>
-              <Link to="/volunteer">
+              <Link to="/login">
                 <motion.button
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}

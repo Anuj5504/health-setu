@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:5000/api/fitbit';
+const API_BASE_URL = 'https://hm-0023-mle.vercel.app/api/fitbit';
 
 export const fitbitUtils = {
   // Initialize Fitbit connection

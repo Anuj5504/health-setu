@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import { AnimatePresence } from "framer-motion";
@@ -28,11 +28,10 @@ import Medicine from './pages/Medicine';
 import MaintenancePage from './DashBoardCompo/MaintenancePage';
 import ConnectCallback from './pages/ConnectCallback';
 
-function App() {
+const App = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-
     const timer = setTimeout(() => {
       setLoading(false);
     }, 2000);
@@ -41,49 +40,43 @@ function App() {
   }, []);
 
   return (
-    <>
-      <AnimatePresence mode='wait'>
-        {loading && <Preloader setLoading={setLoading} />}
-      </AnimatePresence>
-
-      {!loading && (
+    <Router>
+      <Suspense fallback={null}>
+        <Preloader />
         <AuthProvider>
-          <Router>
-            <ToastContainer position="top-right" autoClose={3000} />
-            <Header />
-            <Routes>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/admin-dashboard" element={<AdminPage />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/docdashboard" element={<DocDashbaord />} />
-              <Route path="/doc-patients-health/:id" element={<DocPatientshealth />} />
-              <Route path="/login" element={<LoginForm />} />
-              <Route path="/register" element={<Signup />} />
-              <Route path="/about" element={<AboutPage/>} />
-              <Route path="/contact" element={<ContactPage />} />
-              <Route path="/talk" element={<TalkAI />} />
-              <Route path="/appointments" element={<Appointments />} />
+          <ToastContainer position="top-right" autoClose={3000} />
+          <Header />
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/admin-dashboard" element={<AdminPage />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/docdashboard" element={<DocDashbaord />} />
+            <Route path="/doc-patients-health/:id" element={<DocPatientshealth />} />
+            <Route path="/login" element={<LoginForm />} />
+            <Route path="/register" element={<Signup />} />
+            <Route path="/about" element={<AboutPage/>} />
+            <Route path="/contact" element={<ContactPage />} />
+            <Route path="/talk" element={<TalkAI />} />
+            <Route path="/appointments" element={<Appointments />} />
 
+            {/* Inventory route */}
 
-              {/* Inventory route */}
+            <Route path="/admin/inventory/" element={<InventoryDashboard />} />
+            <Route path="/admin/inventory/add-item" element={<AddItems />} />
+            <Route path="/admin/inventory/low-stock" element={<LowStockItems />} />
+            <Route path="/admin/inventory/stock-analytics" element={<StockAnalytics />} />
 
-              <Route path="/admin/inventory/" element={<InventoryDashboard />} />
-              <Route path="/admin/inventory/add-item" element={<AddItems />} />
-              <Route path="/admin/inventory/low-stock" element={<LowStockItems />} />
-              <Route path="/admin/inventory/stock-analytics" element={<StockAnalytics />} />
-
-              <Route path="/PAppointments" element={<PAppointments />} />
-              <Route path="/fitbit-data" element={<FitbitData />} />
-              <Route path="/doctor-profile" element={<DoctorProfile />} />
-              <Route path="/medicine" element={<Medicine />} />
-              <Route path="/maintenance" element={<MaintenancePage />} />
-              <Route path="/connect" element={<ConnectCallback />} />
-            </Routes>
-          </Router>
+            <Route path="/PAppointments" element={<PAppointments />} />
+            <Route path="/fitbit-data" element={<FitbitData />} />
+            <Route path="/doctor-profile" element={<DoctorProfile />} />
+            <Route path="/medicine" element={<Medicine />} />
+            <Route path="/maintenance" element={<MaintenancePage />} />
+            <Route path="/connect" element={<ConnectCallback />} />
+          </Routes>
         </AuthProvider>
-      )}
-    </>
+      </Suspense>
+    </Router>
   );
-}
+};
 
 export default App;

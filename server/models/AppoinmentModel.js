@@ -5,6 +5,14 @@ const AppoinmentSchema = new mongoose.Schema({
     mainSymptoms: String,
     report: String,
     appointmentDate: String,
+    appointmentTime: String,
+    status: {
+        type: String,
+        enum: ['scheduled', 'completed', 'cancelled'],
+        default: 'scheduled'
+    }
+}, {
+    timestamps: true
 });
 
 module.exports = mongoose.model('AppointmentModel', AppoinmentSchema);

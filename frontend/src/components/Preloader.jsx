@@ -1,177 +1,151 @@
-import { motion } from 'framer-motion';
+import React, { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 
-const Preloader = ({ setLoading }) => {
-  // Particle animation config
-  const particles = [...Array(12)].map((_, i) => ({
-    x: Math.random() * window.innerWidth,
-    y: Math.random() * window.innerHeight,
-    size: Math.random() * 20 + 10
-  }));
+const Preloader = () => {
+  const [show, setShow] = useState(true);
+  const location = useLocation();
+
+  useEffect(() => {
+    // Only show preloader on root path
+    if (location.pathname !== '/') {
+      setShow(false);
+      return;
+    }
+
+    // Add overflow hidden to body when preloader is active
+    document.body.style.overflow = 'hidden';
+
+    // Remove preloader after animation
+    const timer = setTimeout(() => {
+      setShow(false);
+      document.body.style.overflow = 'unset';
+    }, 3000);
+
+    return () => {
+      clearTimeout(timer);
+      document.body.style.overflow = 'unset';
+    };
+  }, [location]);
+
+  if (!show) return null;
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 1 }}
-      onAnimationComplete={() => setLoading(false)}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-r from-blue-900 via-indigo-900 to-purple-900 overflow-hidden"
-    >
-      {/* Animated Background Elements */}
-      <div className="absolute inset-0">
-        {/* Animated Particles */}
-        {particles.map((particle, i) => (
-          <motion.div
-            key={i}
-            initial={{ 
-              x: particle.x,
-              y: particle.y,
-              scale: 0,
-              opacity: 0
-            }}
-            animate={{ 
-              x: [particle.x, particle.x + 100, particle.x],
-              y: [particle.y, particle.y - 100, particle.y],
-              scale: [0, 1, 0],
-              opacity: [0, 0.6, 0]
-            }}
-            transition={{
-              duration: 4 + i,
-              repeat: Infinity,
-              ease: "easeInOut"
-            }}
-            className={`absolute w-${particle.size} h-${particle.size} rounded-full bg-white/10 blur-xl`}
-          />
-        ))}
-
-        {/* Animated Gradient Overlay */}
-        <motion.div
-          animate={{
-            background: [
-              'linear-gradient(45deg, rgba(59,130,246,0.1) 0%, rgba(147,51,234,0.1) 100%)',
-              'linear-gradient(225deg, rgba(59,130,246,0.1) 0%, rgba(147,51,234,0.1) 100%)',
-              'linear-gradient(45deg, rgba(59,130,246,0.1) 0%, rgba(147,51,234,0.1) 100%)'
-            ]
-          }}
-          transition={{ duration: 5, repeat: Infinity }}
-          className="absolute inset-0"
-        />
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-50 p-4">
+      {/* Background pulse circles - Responsive sizes */}
+      <div className="absolute inset-0 flex items-center justify-center">
+        <div className="w-48 h-48 md:w-64 md:h-64 bg-blue-500/5 rounded-full animate-ping"></div>
+        <div className="absolute w-36 h-36 md:w-48 md:h-48 bg-indigo-500/10 rounded-full animate-ping" style={{ animationDelay: '0.2s' }}></div>
+        <div className="absolute w-24 h-24 md:w-32 md:h-32 bg-blue-500/15 rounded-full animate-ping" style={{ animationDelay: '0.4s' }}></div>
       </div>
 
-      <div className="relative text-center z-10">
-        {/* Main Content Container */}
-        <motion.div
-          initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ duration: 1 }}
-          className="bg-white/5 backdrop-blur-xl rounded-3xl p-10 shadow-2xl border border-white/10"
-        >
-          {/* Logo Container */}
-          <motion.div className="relative mb-8">
-            {/* Multiple Rotating Rings */}
-            {[...Array(3)].map((_, i) => (
-              <motion.div
-                key={i}
-                animate={{ rotate: 360 }}
-                transition={{ 
-                  duration: 8 - i * 2,
-                  repeat: Infinity,
-                  ease: "linear"
-                }}
-                className={`absolute inset-${i * 2} rounded-full border-2 border-t-blue-400/30 border-r-purple-400/30 border-b-blue-400/30 border-l-purple-400/30`}
-              />
-            ))}
-            
-            {/* Hospital Icon with Enhanced Animation */}
-            <motion.div
-              animate={{ 
-                scale: [1, 1.2, 1],
-                rotateY: [0, 360],
-                filter: [
-                  'drop-shadow(0 0 0px rgba(59,130,246,0.5))',
-                  'drop-shadow(0 0 20px rgba(59,130,246,0.5))',
-                  'drop-shadow(0 0 0px rgba(59,130,246,0.5))'
-                ]
-              }}
-              transition={{ 
-                duration: 3,
-                repeat: Infinity,
-                ease: "easeInOut"
-              }}
-              className="text-8xl mb-6 relative z-10"
-            >
-              🏥
-            </motion.div>
-
-            {/* Brand Name with Gradient */}
-            <motion.h2
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400 tracking-wider"
-            >
-              HealthCare
-            </motion.h2>
-          </motion.div>
-
-          {/* Enhanced Progress Bar */}
-          <div className="relative w-80 h-2 bg-white/10 rounded-full overflow-hidden mx-auto">
-            <motion.div
-              initial={{ x: '-100%' }}
-              animate={{ x: '100%' }}
-              transition={{
-                repeat: Infinity,
-                duration: 1.5,
-                ease: "easeInOut"
-              }}
-              className="absolute top-0 left-0 w-1/2 h-full bg-gradient-to-r from-blue-500 via-purple-500 to-blue-500"
-            />
-            <motion.div
-              animate={{ opacity: [0.3, 0.6, 0.3] }}
-              transition={{ duration: 1.5, repeat: Infinity }}
-              className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
-            />
-          </div>
-
-          {/* Loading Message with Typing Effect */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.5 }}
-            className="mt-8 space-y-3"
+      <div className="relative max-w-sm w-full mx-auto">
+        {/* Main heartbeat animation - Responsive size */}
+        <div className="relative w-24 h-24 md:w-32 md:h-32 mb-6 md:mb-8 mx-auto">
+          <svg 
+            className="w-full h-full text-blue-600 animate-pulse" 
+            viewBox="0 0 24 24" 
+            fill="currentColor"
           >
-            <motion.p
-              animate={{ 
-                color: ['rgb(147,197,253)', 'rgb(216,180,254)', 'rgb(147,197,253)']
-              }}
-              transition={{ duration: 3, repeat: Infinity }}
-              className="font-medium tracking-wide text-lg"
-            >
-              Preparing Your Healthcare Experience
-            </motion.p>
+            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+          </svg>
+          
+          {/* ECG Line - Responsive width */}
+          <div className="absolute -bottom-4 left-1/2 transform -translate-x-1/2 w-36 md:w-48">
+            <svg className="w-full" height="20" viewBox="0 0 100 20">
+              <path
+                className="ecg-line text-blue-500"
+                d="M 0,10 L 10,10 L 15,0 L 20,20 L 25,10 L 30,10 L 35,10 L 40,10 L 45,0 L 50,20 L 55,10 L 60,10 L 65,10 L 70,10 L 75,0 L 80,20 L 85,10 L 90,10 L 95,10 L 100,10"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1"
+              />
+            </svg>
+          </div>
+        </div>
 
-            {/* Enhanced Loading Dots */}
-            <div className="flex justify-center gap-3">
-              {[...Array(3)].map((_, i) => (
-                <motion.div
-                  key={i}
-                  animate={{
-                    y: [-4, 4, -4],
-                    scale: [1, 1.2, 1],
-                    opacity: [0.5, 1, 0.5]
-                  }}
-                  transition={{
-                    duration: 1,
-                    repeat: Infinity,
-                    delay: i * 0.2
-                  }}
-                  className="w-3 h-3 rounded-full bg-gradient-to-r from-blue-400 to-purple-400"
-                />
-              ))}
-            </div>
-          </motion.div>
-        </motion.div>
+        {/* Hospital Name - Responsive text */}
+        <div className="text-center mb-8 md:mb-12">
+          <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-800 mb-2">
+            HealthCare
+          </h1>
+          <p className="text-base md:text-lg text-gray-600">
+            Your Health, Our Priority
+          </p>
+        </div>
+
+        {/* Loading Indicators - Responsive spacing */}
+        <div className="flex justify-center space-x-2 mb-6 md:mb-8">
+          <div className="w-2 h-2 md:w-3 md:h-3 rounded-full bg-blue-600 animate-bounce" style={{ animationDelay: '0s' }}></div>
+          <div className="w-2 h-2 md:w-3 md:h-3 rounded-full bg-blue-600 animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+          <div className="w-2 h-2 md:w-3 md:h-3 rounded-full bg-blue-600 animate-bounce" style={{ animationDelay: '0.4s' }}></div>
+        </div>
+
+        {/* Progress Bar - Responsive width */}
+        <div className="w-48 md:w-64 h-1 bg-gray-200 rounded-full overflow-hidden mx-auto">
+          <div 
+            className="h-full bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full transition-all duration-3000 ease-out loading-progress"
+          ></div>
+        </div>
+
+        {/* Loading Status - Responsive text */}
+        <div className="text-center mt-4">
+          <p className="text-sm md:text-base text-gray-600">
+            Preparing your healthcare experience...
+          </p>
+        </div>
+
+        {/* Medical Cross Decorations - Hidden on small screens */}
+        <div className="hidden md:block absolute top-0 left-0 -translate-x-full -translate-y-full p-4">
+          <svg className="w-8 h-8 text-blue-200" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M19 3H5C3.89 3 3 3.89 3 5V19C3 20.11 3.89 21 5 21H19C20.11 21 21 20.11 21 19V5C21 3.89 20.11 3 19 3M19 19H5V5H19V19M11 17H13V13H17V11H13V7H11V11H7V13H11V17Z"/>
+          </svg>
+        </div>
+        <div className="hidden md:block absolute bottom-0 right-0 translate-x-full translate-y-full p-4">
+          <svg className="w-8 h-8 text-indigo-200" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M19 3H5C3.89 3 3 3.89 3 5V19C3 20.11 3.89 21 5 21H19C20.11 21 21 20.11 21 19V5C21 3.89 20.11 3 19 3M19 19H5V5H19V19M11 17H13V13H17V11H13V7H11V11H7V13H11V17Z"/>
+          </svg>
+        </div>
       </div>
-    </motion.div>
+
+      <style jsx>{`
+        @keyframes ecgAnimate {
+          from {
+            stroke-dashoffset: 100;
+          }
+          to {
+            stroke-dashoffset: -100;
+          }
+        }
+        
+        .ecg-line {
+          stroke-dasharray: 100;
+          animation: ecgAnimate 3s linear infinite;
+        }
+
+        @keyframes loadProgress {
+          0% { width: 0; }
+          20% { width: 20%; }
+          40% { width: 40%; }
+          60% { width: 60%; }
+          80% { width: 80%; }
+          100% { width: 100%; }
+        }
+
+        .loading-progress {
+          animation: loadProgress 3s ease-out forwards;
+        }
+
+        @media (max-width: 640px) {
+          .loading-progress {
+            animation-duration: 2.5s;
+          }
+          
+          .ecg-line {
+            animation-duration: 2.5s;
+          }
+        }
+      `}</style>
+    </div>
   );
 };
 

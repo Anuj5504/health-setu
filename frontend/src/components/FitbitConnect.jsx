@@ -8,7 +8,7 @@ const FitbitConnect = () => {
   const handleConnect = async () => {
     try {
       setIsConnecting(true);
-      const response = await axios.get('http://localhost:5000/api/fitbit/auth', {
+      const response = await axios.get('https://hm-0023-mle.vercel.app/api/fitbit/auth', {
         withCredentials: true
       });
       

@@ -22,7 +22,7 @@ const AdminPage = () => {
 
   const fetchAllPatients = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/patients');
+      const response = await axios.get('https://hm-0023-mle.vercel.app/api/patients');
       const formattedPatients = response.data.map(patient => ({
         _id: patient._id,
         name: patient.name || 'No Name',
@@ -55,7 +55,7 @@ const AdminPage = () => {
 
   const fetchDoctors = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/caregivers');
+      const response = await axios.get('https://hm-0023-mle.vercel.app/api/caregivers');
       const formattedDoctors = response.data.map(doctor => ({
         _id: doctor._id,
         name: doctor.name || 'No Name',
@@ -86,7 +86,7 @@ const AdminPage = () => {
       setLoading(true);
       
       // Update patient's caregiver
-      await axios.put(`http://localhost:5000/api/patients/update-caregiver`, {
+      await axios.put(`https://hm-0023-mle.vercel.app/api/patients/update-caregiver`, {
         patientId: selectedPatient,
         caregiverId: selectedDoctor
       });

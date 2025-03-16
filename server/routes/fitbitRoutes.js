@@ -6,7 +6,7 @@ const session = require('express-session');
 // Fitbit API credentials
 const CLIENT_ID = process.env.FITBIT_CLIENT_ID || '23Q3V2';
 const CLIENT_SECRET = process.env.FITBIT_CLIENT_SECRET || '4f8232cb7d1aacf386bb05f6f693ce73';
-const REDIRECT_URI = process.env.FITBIT_REDIRECT_URI || 'http://localhost:5173/connect';
+const REDIRECT_URI = process.env.FITBIT_REDIRECT_URI || 'http://localhost:5000/connect';
 
 // Initialize OAuth flow
 router.get('/auth', (req, res) => {

@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Hr1 from '../assets/hr1.jpg';
 import Hr2 from '../assets/hr2.jpg';
 import Hr3 from '../assets/hr3.jpg';
@@ -8,6 +8,18 @@ import Hr4 from '../assets/hr4.jpg';
 // ... imports remain the same
 
 function HeroSection() {
+  const navigate = useNavigate();
+
+  const handleAppointmentClick = (e) => {
+    e.preventDefault();
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate('/login');
+    } else {
+      navigate('/talk');
+    }
+  };
+
   return (
     <div className="relative min-h-[90vh] bg-gradient-to-b from-blue-50/50 to-white font-poppins overflow-hidden">
       {/* Background Pattern */}
@@ -37,26 +49,27 @@ function HeroSection() {
             </motion.div>
 
             <h1 className="text-4xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
-            Better Care, <br/>
+              Better Care, <br/>
               <span className="text-blue-600">Smarter Management</span>
             </h1>
             
             <p className="text-lg lg:text-xl text-gray-600 mb-8 font-inter max-w-xl">
-              Optimizing hospital operations for seamless patient care. Schedule appointments, manage inventory, and ensure timely treatment with our integrated healthcare system.            </p>
+              Optimizing hospital operations for seamless patient care. Schedule appointments, manage inventory, and ensure timely treatment with our integrated healthcare system.
+            </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-12">
-              <Link to="/talk">
-                <motion.button 
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="w-full sm:w-auto px-8 py-4 bg-blue-500 text-white rounded-xl hover:bg-blue-600 
-                           transition-all font-semibold shadow-lg hover:shadow-blue-200/50 
-                           flex items-center justify-center gap-2 group"
-                >
-                  <span>Book an Appointment</span>
-                  <span className="group-hover:translate-x-0.5 transition-transform">→</span>
-                </motion.button>
-              </Link>
-              <Link to="/contact">
+              <motion.button 
+                onClick={handleAppointmentClick}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="w-full sm:w-auto px-8 py-4 bg-blue-500 text-white rounded-xl hover:bg-blue-600 
+                         transition-all font-semibold shadow-lg hover:shadow-blue-200/50 
+                         flex items-center justify-center gap-2 group"
+              >
+                <span>Book an Appointment</span>
+                <span className="group-hover:translate-x-0.5 transition-transform">→</span>
+              </motion.button>
+
+              <Link to="/login">
                 <motion.button 
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
@@ -64,7 +77,7 @@ function HeroSection() {
                            rounded-xl hover:bg-blue-50 transition-all font-semibold 
                            flex items-center justify-center gap-2 group"
                 >
-                  <span> Get Started </span>
+                  <span>Get Started</span>
                   <span className="group-hover:translate-x-0.5 transition-transform">→</span>
                 </motion.button>
               </Link>

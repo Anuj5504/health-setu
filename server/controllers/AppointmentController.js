@@ -10,47 +10,35 @@ const groq = new Groq({
     apiKey: process.env.GROQ_API_KEY
 });
 
-const SYSTEM_PROMPT = `You are a friendly medical assistant. Have a natural conversation.
+const SYSTEM_PROMPT = `You are an advanced medical pre-screening AI assistant. Your goal is to gather detailed information about the patient's symptoms before their appointment.
 
 Current conversation stage: {stage}
 
 Guidelines based on stage:
-- name_collection: 
-  Start warmly: "Hi! May I know your name?"
+- initial_greeting: 
+  Start with: "Hello {patientName}! I understand you have an appointment on {appointmentDate} at {appointmentTime}. Could you tell me what brings you in today?"
 
 - symptoms_collection: 
-  After getting name, say: "Hello [name], what health concerns bring you here today?"
-  Based on their symptoms, ask relevant follow-up questions:
-  * For pain-related issues:
-    - "Can you point out where exactly the pain is?"
-    - "Is it a constant pain or does it come and go?"
-    - "On a scale of 1-10, how would you rate the pain?"
-    - "Does any particular movement make it worse?"
-  * For fever/cold:
-    - "How long have you had the fever?"
-    - "Have you measured your temperature?"
-    - "Are you experiencing any other symptoms like cough or body ache?"
-  * For any condition:
-    - "How long have you been experiencing these symptoms?"
-    - "Have you taken any medication for this?"
-    - "Does it affect your daily activities?"
-  
-  Ask these questions one at a time and show concern.
+  Ask focused follow-up questions based on their complaint:
+  - "Where exactly is the pain/discomfort?"
+  - "How long have you been experiencing this?"
+  - "On a scale of 1-10, how severe is it?"
+  - "Does anything make it better or worse?"
+  - "How is this affecting your daily activities?"
 
-- appointment_scheduling: 
-  Say: "I understand your situation. Let's schedule an appointment with our doctor."
-  Then ask: "Which date would be convenient for you? You can tell me like '23rd March' or '15th April'"
-  After getting date, ask: "And what time would you prefer - morning (10 AM), afternoon (2 PM), or evening (6 PM)?"
-  If date is unclear, say: "Could you please specify the date again? For example, '23rd March' or '15th April'"
+- symptoms_confirmation:
+  Summarize briefly and naturally:
+  "I understand that you're experiencing [main symptom] in [location] for [duration]. You mentioned the pain level is [severity] and [any other key details]. Is this correct?"
 
-- report_generation: Say "REPORT_READY"
+- report_generation: 
+  Say "REPORT_READY"
 
 Important:
-1. Ask only ONE question at a time
-2. Show empathy and understanding
-3. For symptoms, ask at least 3-4 relevant follow-up questions
-4. Get both date and time preference clearly
-5. Keep the conversation natural and friendly
+1. Keep questions simple and clear
+2. Show empathy
+3. Don't ask for information already provided
+4. Focus on the main complaint
+5. Keep summaries brief and natural
 
 Previous conversation:
 {conversation}`;
@@ -88,22 +76,39 @@ async function getAIResponse(prompt) {
 
 const startAIConversation = async (req, res) => {
     try {
-        const { sessionId} = req.body;
+        const { sessionId, appointmentDate, appointmentTime, patientName, patientId } = req.body;
         if (!sessionId) {
             return res.status(400).json({ error: "Missing sessionId" });
         }
 
+        // Format the date for display
+        const formattedDate = new Date(appointmentDate).toLocaleDateString('en-US', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+
         sessions[sessionId] = {
             data: {
-                patientId: "",
+                patientId: patientId,
+                patientName: patientName,
                 symptoms: "",
-                appointmentDate: "",
-                stage: "name_collection",
+                appointmentDate: formattedDate,
+                appointmentTime: appointmentTime,
+                stage: "initial_greeting",
             },
             conversation: []
         };
 
-        const reply = await getAIResponse(SYSTEM_PROMPT.replace("{stage}", "name_collection").replace("{conversation}", ""));
+        const customizedPrompt = SYSTEM_PROMPT
+            .replace(/{patientName}/g, patientName)
+            .replace(/{appointmentDate}/g, formattedDate)
+            .replace(/{appointmentTime}/g, appointmentTime)
+            .replace("{stage}", "initial_greeting")
+            .replace("{conversation}", "");
+
+        const reply = await getAIResponse(customizedPrompt);
         sessions[sessionId].conversation.push({ role: "assistant", content: reply });
 
         res.json({ reply });
@@ -125,108 +130,84 @@ const processAIConversation = async (req, res) => {
         const session = sessions[sessionId];
         session.conversation.push({ role: "user", content: text });
 
-        const lastMessage = text.toLowerCase();
-
-        switch (session.data.stage) {
-            case "name_collection":
+        // Store conversation details
+        if (session.data.stage === "initial_greeting") {
+            session.data.stage = "symptoms_collection";
+        } else if (session.data.stage === "symptoms_collection") {
+            session.data.symptoms += text + " ";
+            if (session.conversation.length >= 6) {
+                session.data.stage = "symptoms_confirmation";
+            }
+        } else if (session.data.stage === "symptoms_confirmation") {
+            if (text.toLowerCase().includes('yes')) {
+                session.data.stage = "report_generation";
+            } else {
                 session.data.stage = "symptoms_collection";
-                break;
-
-            case "symptoms_collection":
-                session.data.symptoms += text + " ";
-                if (session.conversation.length >= 6) {
-                    session.data.stage = "appointment_scheduling";
-                }
-                break;
-
-            case "appointment_scheduling":
-                // Match dates like "23rd March" or "15th April"
-                const dateMatch = lastMessage.match(/(\d{1,2})(st|nd|rd|th)?\s*(march|april|may|june|july|august|september|october|november|december|jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)/i);
-
-                if (dateMatch) {
-                    const day = dateMatch[1].padStart(2, '0');
-                    const monthInput = dateMatch[3].toLowerCase();
-                    const monthMap = {
-                        'jan': '01', 'january': '01', 'feb': '02', 'february': '02',
-                        'mar': '03', 'march': '03', 'apr': '04', 'april': '04',
-                        'may': '05', 'jun': '06', 'june': '06', 'jul': '07',
-                        'july': '07', 'aug': '08', 'august': '08', 'sep': '09',
-                        'september': '09', 'oct': '10', 'october': '10', 'nov': '11',
-                        'november': '11', 'dec': '12', 'december': '12'
-                    };
-                    const month = monthMap[monthInput];
-
-                    const timeOfDay = lastMessage.includes('morning') ? '10:00 AM' :
-                        lastMessage.includes('afternoon') ? '2:00 PM' :
-                            lastMessage.includes('evening') ? '6:00 PM' : '10:00 AM';
-
-                    session.data.appointmentDate = `${day}/${month}/2025`;
-                    session.data.appointmentTime = timeOfDay;
-                    session.data.stage = "report_generation";
-                }
-                break;
+            }
         }
 
         const conversationHistory = session.conversation
             .map(msg => `${msg.role}: ${msg.content}`)
             .join("\n");
 
-        const prompt = SYSTEM_PROMPT
+        const customizedPrompt = SYSTEM_PROMPT
+            .replace(/{patientName}/g, session.data.patientName)
+            .replace(/{appointmentDate}/g, session.data.appointmentDate)
+            .replace(/{appointmentTime}/g, session.data.appointmentTime)
             .replace("{stage}", session.data.stage)
             .replace("{conversation}", conversationHistory);
 
-        const reply = await getAIResponse(prompt);
+        const reply = await getAIResponse(customizedPrompt);
         session.conversation.push({ role: "assistant", content: reply });
 
-        // Check if the reply indicates report generation
         if (reply.includes("REPORT_READY") || session.data.stage === "report_generation") {
             try {
-                console.log("Generating report...");
-                const reportPrompt = `Create a medical report from this conversation:
+                const reportPrompt = `Based on this conversation, create a medical report. Use ONLY information that was actually discussed:
 ${conversationHistory}
 
-Format the report as follows:
-Medical Report
+Format the report exactly like this:
 
-Patient Information:
-- Name: [Extract from conversation]
-- Date of Consultation: ${new Date().toLocaleDateString()}
+Medical Report Summary
 
-Symptoms Summary:
-${session.data.symptoms}
+Patient: ${session.data.patientName}
+Appointment: ${session.data.appointmentDate} at ${session.data.appointmentTime}
 
-Appointment Details:
-- Date: ${session.data.appointmentDate}
-- Time: ${session.data.appointmentTime}
+Patient's Description:
+[Write a brief paragraph summarizing what the patient described about their symptoms, using their exact words where possible]
 
-Recommendations:
-- Schedule follow-up with doctor
-- Bring any relevant medical records
-- Arrive 15 minutes before appointment time
+Key Points:
+- Location: [where the pain/symptoms are]
+- Duration: [how long they've had it]
+- Severity: [pain level if mentioned]
+- Trigger: [what caused or worsens it]
+- Impact: [how it affects the patient]
 
-Keep it professional and concise.`;
+Next Steps:
+1. Appointment scheduled for ${session.data.appointmentDate} at ${session.data.appointmentTime}
+2. Please arrive 15 minutes early
+3. Bring any relevant medical records
+
+Important: Only include information that was explicitly mentioned in the conversation. Don't add any assumptions or extra details.`;
 
                 const reportText = await getAIResponse(reportPrompt);
-                console.log("Report generated:", reportText);
 
-                // Create appointment with proper date formatting
-                const [day, month, year] = session.data.appointmentDate.split('/');
-                const formattedDate = `${year}-${month}-${day}`;
-
+                // Save the appointment with all collected information
                 const newAppointment = new Appointment({
-                    patientId: patientId,
+                    patientId: session.data.patientId,
                     mainSymptoms: session.data.symptoms.trim(),
                     report: reportText,
-                    appointmentDate: new Date(formattedDate)
+                    appointmentDate: session.data.appointmentDate,
+                    appointmentTime: session.data.appointmentTime,
+                    status: 'scheduled'
                 });
 
                 const savedAppointment = await newAppointment.save();
-                console.log("Appointment saved:", savedAppointment);
 
+                // Clean up the session
                 delete sessions[sessionId];
 
                 return res.json({
-                    reply: `Thank you. I've scheduled your appointment for ${session.data.appointmentDate} at ${session.data.appointmentTime}.`,
+                    reply: `Thank you for providing your symptoms. I've prepared a summary for your appointment on ${session.data.appointmentDate} at ${session.data.appointmentTime}.`,
                     report: reportText,
                     appointmentId: savedAppointment._id
                 });
@@ -249,7 +230,7 @@ Keep it professional and concise.`;
 const getPatientAppointments = async (req, res) => {
     try {
         const appointments = await Appointment.find({ patientId: req.params.patientId })
-            .sort({ appointmentDate: -1 });
+            .sort({ appointmentDate: -1, appointmentTime: -1 });
         res.json(appointments);
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -259,9 +240,36 @@ const getPatientAppointments = async (req, res) => {
 const getAppointments = async (req, res) => {
     try {
         const appointments = await Appointment.find()
-            .sort({ appointmentDate: -1 });
+            .sort({ appointmentDate: -1, appointmentTime: -1 });
         res.json(appointments);
     } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+const getAvailableSlots = async (req, res) => {
+    try {
+        const { date } = req.params;
+        
+        // Format the date to match how it's stored in the database
+        const formattedDate = new Date(date).toLocaleDateString('en-US', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+
+        // Get all appointments for the given date
+        const appointments = await Appointment.find({
+            appointmentDate: formattedDate
+        });
+
+        console.log('Date requested:', formattedDate);
+        console.log('Appointments found:', appointments);
+
+        res.json(appointments);
+    } catch (error) {
+        console.error('Error in getAvailableSlots:', error);
         res.status(500).json({ error: error.message });
     }
 };
@@ -270,5 +278,6 @@ module.exports = {
     startAIConversation,
     processAIConversation,
     getPatientAppointments,
-    getAppointments
+    getAppointments,
+    getAvailableSlots
 };

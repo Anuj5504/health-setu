@@ -17,7 +17,7 @@ const DoctorProfile = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+  const baseURL = import.meta.env.VITE_API_URL || 'https://hm-0023-mle.vercel.app';
   const token = localStorage.getItem('token');
   const decodedToken = jwtDecode(token);
   const patientId = decodedToken.user._id;

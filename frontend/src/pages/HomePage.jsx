@@ -4,9 +4,21 @@ import Footer from "../components/Footer"
 import GetInvolved from "../components/GetInvolved"
 import Header from "../components/Header"
 import HeroSection from "../components/HeroSection"
-import {Link} from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 
 const HomePage = () => {
+    const navigate = useNavigate();
+
+    const handleAppointmentClick = (e) => {
+        e.preventDefault();
+        const token = localStorage.getItem("token");
+        if (!token) {
+            navigate('/login');
+        } else {
+            navigate('/talk');
+        }
+    };
+
     return (
         <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
             {/* Emergency Banner */}
@@ -19,8 +31,6 @@ const HomePage = () => {
             <main className="relative">
                 {/* Hero Section */}
                 <HeroSection />
-
-                
 
                 {/* Features Section */}
                 <motion.section
@@ -48,17 +58,15 @@ const HomePage = () => {
             <Footer />
 
             {/* Emergency Float Button */}
-            <Link to="/talk">
             <motion.div
+                onClick={handleAppointmentClick}
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 whileHover={{ scale: 1.05 }}
-                className="fixed bottom-6 right-6 bg-blue-500 text-white px-6 py-3 rounded-full shadow-lg hover:bg-blue-600 transition-all z-50 flex items-center gap-2"
+                className="fixed bottom-6 right-6 bg-blue-500 text-white px-6 py-3 rounded-full shadow-lg hover:bg-blue-600 transition-all z-50 flex items-center gap-2 cursor-pointer"
             >
                 <span className="animate-pulse">📅</span> Book Appointment
             </motion.div>
-        </Link>
-
         </div>
     )
 }

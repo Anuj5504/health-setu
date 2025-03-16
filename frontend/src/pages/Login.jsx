@@ -86,8 +86,8 @@ const LoginForm = () => {
 
   return (
     <>
-      <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
-        <div className="w-full max-w-4xl p-8 flex shadow-2xl rounded-2xl bg-white m-8">
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-b mt-12 from-gray-50 to-gray-100">
+        <div className="w-full max-w-4xl flex shadow-2xl rounded-2xl bg-white m-8 ">
           
           {/* Left side - Illustration */}
           <div className="hidden lg:flex lg:w-1/2 items-center justify-center p-8 bg-blue-50 rounded-l-xl">

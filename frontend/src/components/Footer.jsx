@@ -38,7 +38,6 @@ function Footer() {
 
   return (
     <footer className="bg-gray-900 text-white relative overflow-hidden">
-      {/* Emergency Contact Banner */}
       <div className="bg-blue-500 py-3 text-center">
         <p className="text-white font-medium px-4">
           24/7 Emergency:{" "}
@@ -53,7 +52,6 @@ function Footer() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
-          {/* Brand Section */}
           <div className="col-span-1 md:col-span-2 lg:col-span-1">
             <Link to="/" className="flex-shrink-0">
               <motion.div
@@ -93,7 +91,6 @@ function Footer() {
             </div>
           </div>
 
-          {/* Quick Links */}
           <div className="space-y-2">
             <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
             <ul className="space-y-2">
@@ -110,7 +107,6 @@ function Footer() {
             </ul>
           </div>
 
-          {/* Contact Info */}
           <div className="space-y-2">
             <h3 className="text-lg font-semibold mb-4">Contact Us</h3>
             <ul className="space-y-3 text-gray-400">
@@ -139,7 +135,6 @@ function Footer() {
             </ul>
           </div>
 
-          {/* Newsletter */}
           <div className="space-y-2">
             <h3 className="text-lg font-semibold mb-4">Stay Updated</h3>
             <p className="text-gray-400 mb-4">
@@ -162,13 +157,6 @@ function Footer() {
           </div>
         </div>
 
-        {/* Copyright */}
-        <div className="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400">
-          <p className="flex items-center justify-center gap-1 flex-wrap px-4">
-          © 2024 HealthSetu. Built for smarter healthcare.{" "}
-            <BiSolidHeart className="text-blue-500" /> 
-          </p>
-        </div>
       </div>
     </footer>
   )

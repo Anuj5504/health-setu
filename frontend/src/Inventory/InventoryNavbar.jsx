@@ -7,7 +7,7 @@ const InventoryNavbar = () => {
 
   const fetchNotifications = async () => {
     try {
-      const response = await fetch('http://localhost:3000/api/inventory/');
+      const response = await fetch('https://hm-0023-mle.vercel.app/api/inventory/');
       if (!response.ok) throw new Error('Failed to fetch inventory');
       const items = await response.json();
 

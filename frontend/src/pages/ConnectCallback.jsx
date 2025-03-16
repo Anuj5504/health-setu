@@ -24,7 +24,7 @@ function ConnectCallback() {
   const handleCallback = async (code, state) => {
     try {
       // Exchange code for token
-      const response = await axios.post('http://localhost:5000/api/fitbit/token', {
+      const response = await axios.post('https://hm-0023-mle.vercel.app/api/fitbit/token', {
         code,
         state
       }, {

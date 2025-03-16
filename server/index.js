@@ -5,6 +5,7 @@ const dotenv = require("dotenv");
 const connectDB = require('./config/db');
 const nodemailer = require("nodemailer");
 const session = require('express-session');
+const fs = require('fs');
 
 dotenv.config();
 const app = express();
@@ -46,6 +47,13 @@ app.use('/api/goals', require('./routes/goalRoutes'));
 app.use('/api/inventory',require('./routes/InventoryRoutes'));
 app.use('/api/fitbit', require('./routes/fitbitRoutes'));
 app.use('/api/prescriptions', require('./routes/prescriptionRoutes'));
+app.use('/api/report-ai', require('./routes/reportAIRoutes'));
+
+// Make sure uploads directory exists
+const uploadDir = 'uploads';
+if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir);
+}
 
 app.post("/api/email", async (req, res) => {
     const { to, subject, text } = req.body; 

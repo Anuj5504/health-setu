@@ -61,7 +61,12 @@ const DocPatientshealth = () => {
     <DashboardLayout>
       <div className="space-y-6 p-4 md:p-6">
         <h1 className="text-xl md:text-2xl font-bold text-gray-900">Patient Health Details</h1>
-
+        <button
+            onClick={() => navigate('/createprescription')}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200"
+          >
+            Create Prescription
+        </button>
         <div className="flex gap-4 my-6">
           {["Patient Info", "Medicine Reminder", "FitBit Data"].map((componentName) => (
             <motion.button

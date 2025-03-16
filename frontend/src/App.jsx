@@ -1,7 +1,6 @@
 import React, { useState, useEffect, Suspense } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
-import { AnimatePresence } from "framer-motion";
 import "react-toastify/dist/ReactToastify.css";
 import LoginForm from "./pages/Login";
 import Signup from "./pages/Signup"
@@ -27,6 +26,7 @@ import DoctorProfile from './pages/DoctorProfile';
 import Medicine from './pages/Medicine';
 import MaintenancePage from './DashBoardCompo/MaintenancePage';
 import ConnectCallback from './pages/ConnectCallback';
+import CreatePrescription from "./Prescription/CreatePrescription";
 
 const App = () => {
   const [loading, setLoading] = useState(true);
@@ -58,6 +58,7 @@ const App = () => {
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/talk" element={<TalkAI />} />
             <Route path="/appointments" element={<Appointments />} />
+            <Route path="/createprescription" element={<CreatePrescription />} />
 
             {/* Inventory route */}
 

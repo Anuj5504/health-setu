@@ -13,7 +13,7 @@ connectDB();
 
 // Configure CORS before other middleware
 app.use(cors({
-  origin: ['http://localhost:5000', 'http://localhost:5173'], // Allow both ports
+  origin: ['http://localhost:5000', 'http://localhost:5173'], 
   credentials: true,
   methods: ['GET', 'POST', 'OPTIONS','PUT','DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization']
@@ -45,12 +45,12 @@ app.use('/api/appointments', require('./routes/appoinmentRoutes'));
 app.use('/api/goals', require('./routes/goalRoutes'));
 app.use('/api/inventory',require('./routes/InventoryRoutes'));
 app.use('/api/fitbit', require('./routes/fitbitRoutes'));
+app.use('/api/prescriptions', require('./routes/prescriptionRoutes'));
 
 app.post("/api/email", async (req, res) => {
     const { to, subject, text } = req.body; 
     console.log(req.body);
-    console.log(process.env.EMAIL_USER);
-    console.log(process.env.EMAIL_PASS);
+
     try {
       const transporter = nodemailer.createTransport({
         service: "gmail",

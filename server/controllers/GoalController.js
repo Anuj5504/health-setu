@@ -70,7 +70,6 @@ const getPatientGoals = async (req, res) => {
     try {
         const { patientId } = req.params;
 
-        console.log('Fetching goals for patient:', patientId);
 
         // Validate patientId format
         if (!mongoose.Types.ObjectId.isValid(patientId)) {
@@ -97,7 +96,6 @@ const getPatientGoals = async (req, res) => {
                 .lean()
                 .exec();
 
-            console.log('Found goals:', goals ? goals.length : 0);
 
             // Return empty array if no goals found
             if (!goals || goals.length === 0) {

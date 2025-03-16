@@ -1,8 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import AdminSidebar from './Sidebar';
 import { toast } from 'react-toastify';
+import { jwtDecode } from "jwt-decode";
 
-const API_URL = import.meta.env.VITE_API_URL;
+const API_URL = 'http://localhost:5000';
+
+const getAdminIdFromToken = () => {
+    const token = localStorage.getItem('token');
+    if (!token) return null;
+
+    try {
+        const payload = jwtDecode(token);
+        return payload.user._id;
+    } catch (error) {
+        console.error('Error parsing token:', error);
+        return null;
+    }
+};
 
 const LowStockItems = () => {
     const [collapsed, setCollapsed] = useState(false);
@@ -18,13 +32,25 @@ const LowStockItems = () => {
 
     const fetchItems = async () => {
         try {
-            const response = await fetch(`${API_URL}/api/inventory/`);
+            const adminId = getAdminIdFromToken();
+            if (!adminId) {
+                setError('Authentication error');
+                return;
+            }
+
+            const response = await fetch(`${API_URL}/api/inventory/low-stock`, {  // Changed endpoint
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ adminId })
+            });
+
             if (!response.ok) {
                 throw new Error('Failed to fetch items');
             }
             const data = await response.json();
             setItems(data);
-            console.log(data)
         } catch (error) {
             setError('Failed to load items');
             console.error('Error:', error);
@@ -35,28 +61,31 @@ const LowStockItems = () => {
 
     useEffect(() => {
         fetchItems();
-    }, []);
+    }, [showExpiringOnly, showExpired]);
 
     const handleDelete = async (itemId) => {
         if (!window.confirm('Are you sure you want to delete this item?')) return;
 
         try {
+            const adminId = getAdminIdFromToken();
+            if (!adminId) {
+                toast.error("Authentication error");
+                return;
+            }
+
             const response = await fetch(`${API_URL}/api/inventory/delete/${itemId}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json'
-                }
+                },
+                body: JSON.stringify({ adminId })
             });
 
             if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || 'Failed to delete item');
+                throw new Error('Failed to delete item');
             }
 
-            const data = await response.json();
-            // Show success message
             toast.success('Item deleted successfully');
-            // Refresh items list
             fetchItems();
         } catch (error) {
             console.error('Error deleting item:', error);
@@ -73,23 +102,28 @@ const LowStockItems = () => {
         setUpdateLoading(true);
 
         try {
+            const adminId = getAdminIdFromToken();
+            if (!adminId) {
+                toast.error("Authentication error");
+                return;
+            }
+
             const response = await fetch(`${API_URL}/api/inventory/update/${editingItem._id}`, {
                 method: 'PUT',
                 headers: {
-                    'Content-Type': 'application/json',
+                    'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
                     quantity: parseInt(editingItem.quantity),
-                    reorderLevel: parseInt(editingItem.reorderLevel)
+                    reorderLevel: parseInt(editingItem.reorderLevel),
+                    adminId
                 })
             });
 
             if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || 'Failed to update item');
+                throw new Error('Failed to update item');
             }
 
-            const data = await response.json();
             toast.success('Item updated successfully');
             await fetchItems();
             setEditingItem(null);
@@ -141,8 +175,8 @@ const LowStockItems = () => {
     return (
         <div className="flex h-screen w-screen mt-14">
             <div className="w-64 bg-white shadow h-full">
-                <AdminSidebar 
-                    collapsed={collapsed} 
+                <AdminSidebar
+                    collapsed={collapsed}
                     setCollapsed={setCollapsed}
                     currentPage="low-stock"
                 />

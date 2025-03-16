@@ -2,7 +2,11 @@ const Inventory = require('../models/InventoryModels');
 
 const getAllItems = async (req, res) => {
     try {
-        const items = await Inventory.find();
+        const { adminId } = req.body;
+        if (!adminId) {
+            return res.status(400).json({ message: 'Admin ID is required' });
+        }
+        const items = await Inventory.find({ adminId });
         res.status(200).json(items);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -22,8 +26,8 @@ const getItemById = async (req, res) => {
 };
 
 const createItem = async (req, res) => {
-    const item = new Inventory(req.body);
     try {
+        const item = new Inventory(req.body);
         const newItem = await item.save();
         res.status(201).json(newItem);
     } catch (error) {
@@ -33,9 +37,14 @@ const createItem = async (req, res) => {
 
 const updateItem = async (req, res) => {
     try {
-        const updatedItem = await Inventory.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        const { adminId, ...updateData } = req.body;
+        const updatedItem = await Inventory.findOneAndUpdate(
+            { _id: req.params.id, adminId },
+            updateData,
+            { new: true }
+        );
         if (!updatedItem) {
-            return res.status(404).json({ message: 'Item not found' });
+            return res.status(404).json({ message: 'Item not found or unauthorized' });
         }
         res.status(200).json(updatedItem);
     } catch (error) {
@@ -45,9 +54,13 @@ const updateItem = async (req, res) => {
 
 const deleteItem = async (req, res) => {
     try {
-        const item = await Inventory.findByIdAndDelete(req.params.id);
+        const { adminId } = req.body;
+        const item = await Inventory.findOneAndDelete({
+            _id: req.params.id,
+            adminId
+        });
         if (!item) {
-            return res.status(404).json({ message: 'Item not found' });
+            return res.status(404).json({ message: 'Item not found or unauthorized' });
         }
         res.status(200).json({ message: 'Item deleted' });
     } catch (error) {
@@ -57,9 +70,13 @@ const deleteItem = async (req, res) => {
 
 const getLowStockItems = async (req, res) => {
     try {
-        // Using MongoDB's $expr to compare fields: quantity < reorderLevel
+        const { adminId } = req.body;
+        if (!adminId) {
+            return res.status(400).json({ message: 'Admin ID is required' });
+        }
         const lowStockItems = await Inventory.find({
-            $expr: { $lt: ["$quantity", "$reorderLevel"] },
+            adminId,
+            $expr: { $lt: ["$quantity", "$reorderLevel"] }
         });
         res.status(200).json(lowStockItems);
     } catch (error) {

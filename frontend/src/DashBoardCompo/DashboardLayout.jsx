@@ -7,9 +7,9 @@ function DashboardLayout({ children }) {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Mobile menu button */}
-      <div className="fixed top-20 left-0 right-0 z-20 bg-white border-b lg:hidden h-16">
-        <div className="px-4 h-full flex items-center">
+      {/* Mobile navbar */}
+      <div className="fixed top-0 left-0 right-0 z-20 bg-white border-b lg:hidden">
+        <div className="px-4 h-16 flex items-center mt-16">
           <button
             onClick={() => setSidebarOpen(true)}
             className="text-gray-500 hover:text-gray-700 focus:outline-none"
@@ -19,8 +19,8 @@ function DashboardLayout({ children }) {
         </div>
       </div>
 
-      <div className="flex pt-20">
-        {/* Sidebar */}
+      <div className="flex pt-32 lg:pt-28">
+        {/* Sidebar - Now positioned relative to navbar */}
         <Sidebar isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />
         
         {/* Main Content */}

@@ -1,6 +1,11 @@
 const mongoose = require("mongoose");
 
 const inventorySchema = new mongoose.Schema({
+  adminId: {
+    type: String,
+    required: true,
+    index: true
+  },
   itemName: {
     type: String,
     required: true,

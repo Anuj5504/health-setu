@@ -227,16 +227,16 @@ const Medicine = () => {
 
     return (
       <div 
-        className={`bg-white rounded-xl shadow-lg p-6 border ${
+        className={`bg-white rounded-xl shadow-lg p-4 sm:p-6 border ${
           isPastDue ? 'border-red-200' : 'border-gray-100'
         } hover:shadow-xl transition-all duration-200 transform hover:-translate-y-1`}
       >
         <div className="flex flex-col">
           <div className="flex justify-between items-start mb-3">
-            <h3 className="text-xl font-semibold text-gray-900">
+            <h3 className="text-base sm:text-xl font-semibold text-gray-900 break-words">
               {medicine.todos[0]?.title}
             </h3>
-            <span className={`px-3 py-1 text-sm font-medium rounded-full ${
+            <span className={`ml-2 px-2 sm:px-3 py-1 text-xs sm:text-sm font-medium rounded-full whitespace-nowrap ${
               medicine.todos[0]?.status === 'completed' 
                 ? 'bg-green-100 text-green-800 border border-green-200' 
                 : medicineDate < now
@@ -281,15 +281,15 @@ const Medicine = () => {
   };
 
   const MedicineSection = ({ title, medicines, icon }) => medicines.length > 0 && (
-    <div className="mb-8">
+    <div className="mb-6 sm:mb-8">
       <div className="flex items-center mb-4">
         {icon}
-        <h2 className="text-xl font-semibold text-gray-800 ml-2">{title}</h2>
-        <span className="ml-2 px-2 py-1 bg-gray-100 rounded-full text-sm text-gray-600">
+        <h2 className="text-lg sm:text-xl font-semibold text-gray-800 ml-2">{title}</h2>
+        <span className="ml-2 px-2 py-1 bg-gray-100 rounded-full text-xs sm:text-sm text-gray-600">
           {medicines.length}
         </span>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         {medicines.map((medicine) => (
           <MedicineCard key={medicine._id} medicine={medicine} />
         ))}
@@ -299,15 +299,17 @@ const Medicine = () => {
 
   return (
     <DashboardLayout>
-      <div className="p-6 max-w-7xl mx-auto">
-        <div className="flex justify-between items-center mb-8">
+      <div className="p-4 sm:p-6 max-w-7xl mx-auto">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Medicine Reminders</h1>
-            <p className="mt-1 text-gray-600">Keep track of your daily medications</p>
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Medicine Reminders</h1>
+            <p className="mt-1 text-sm sm:text-base text-gray-600">Keep track of your daily medications</p>
           </div>
           <button
             onClick={() => setShowAddForm(!showAddForm)}
-            className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+            className="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-lg 
+                     hover:bg-blue-700 transition-all duration-200 shadow-md hover:shadow-lg 
+                     transform hover:-translate-y-0.5"
           >
             <svg 
               className={`w-5 h-5 mr-2 transition-transform duration-200 ${showAddForm ? 'rotate-45' : ''}`} 
@@ -323,8 +325,8 @@ const Medicine = () => {
 
         {showAddForm && (
           <div className="mb-8">
-            <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-lg p-4 sm:p-6 border border-gray-100">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">Medicine Name</label>
                   <input
@@ -332,7 +334,8 @@ const Medicine = () => {
                     name="title"
                     value={formData.title}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                    className="w-full px-3 sm:px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 
+                             focus:border-transparent transition-all duration-200 text-sm sm:text-base"
                     placeholder="Enter medicine name"
                     required
                   />
@@ -345,19 +348,21 @@ const Medicine = () => {
                     value={formData.date}
                     onChange={handleInputChange}
                     min={getMinDateTime()}
-                    className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                    className="w-full px-3 sm:px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 
+                             focus:border-transparent transition-all duration-200 text-sm sm:text-base"
                     required
                   />
                 </div>
               </div>
-              <div className="mt-6">
+              <div className="mt-4 sm:mt-6">
                 <label className="block text-sm font-semibold text-gray-700 mb-2">Medicine Instructions</label>
                 <textarea
                   name="description"
                   value={formData.description}
                   onChange={handleInputChange}
                   rows={3}
-                  className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  className="w-full px-3 sm:px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 
+                           focus:border-transparent transition-all duration-200 text-sm sm:text-base"
                   placeholder="Enter medicine instructions (dosage, frequency, etc.)"
                   required
                 />
@@ -365,7 +370,9 @@ const Medicine = () => {
               <div className="mt-6 flex justify-end">
                 <button
                   type="submit"
-                  className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+                  className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3 bg-blue-600 text-white 
+                           rounded-lg hover:bg-blue-700 transition-all duration-200 shadow-md hover:shadow-lg 
+                           transform hover:-translate-y-0.5"
                 >
                   <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -382,12 +389,12 @@ const Medicine = () => {
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
           </div>
         ) : (
-          <div>
+          <div className="space-y-8">
             <MedicineSection 
               title="Upcoming Medicines" 
               medicines={organizeMedicines(medicines).upcoming}
               icon={
-                <svg className="w-6 h-6 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg className="w-5 sm:w-6 h-5 sm:h-6 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               }
@@ -397,7 +404,7 @@ const Medicine = () => {
               title="Missed Medicines" 
               medicines={organizeMedicines(medicines).past}
               icon={
-                <svg className="w-6 h-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg className="w-5 sm:w-6 h-5 sm:h-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               }
@@ -407,7 +414,7 @@ const Medicine = () => {
               title="Completed Medicines" 
               medicines={organizeMedicines(medicines).completed}
               icon={
-                <svg className="w-6 h-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg className="w-5 sm:w-6 h-5 sm:h-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               }

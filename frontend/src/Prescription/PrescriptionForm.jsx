@@ -421,7 +421,6 @@ const PrescriptionForm = ({ onChange, formData: initialFormData }) => {
                         <option value="alternate day's">Alternate Day's</option>
                         <option value="week's">Week's</option>
                         <option value="month's">Month's</option>
-                        <option value="year's">Year's</option>
                         <option value="sos">SOS</option>
                       </select>
                     </div>

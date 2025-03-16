@@ -104,19 +104,19 @@ const PAppointments = () => {
 
   return (
     <DashboardLayout>
-      <div className="p-6">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold text-gray-900">My Appointments</h2>
+      <div className="p-4 sm:p-6">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">My Appointments</h2>
           <button
             onClick={handleBookAppointment}
-            className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center gap-2"
+            className="w-full sm:w-auto px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 
+                     transition-colors flex items-center justify-center gap-2"
           >
             <span>📅</span> Book Appointment
           </button>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          {/* Calendar Section */}
           <div className="lg:col-span-5">
             <AppointmentCalendar 
               appointments={appointments}
@@ -124,9 +124,8 @@ const PAppointments = () => {
             />
           </div>
 
-          {/* Appointments List Section */}
           <div className="lg:col-span-7">
-            <div className="bg-white rounded-2xl shadow-lg p-6">
+            <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6">
               <h3 className="text-lg font-semibold text-gray-800 mb-4">
                 {filteredAppointments.length > 0 
                   ? `Appointments for ${format(selectedDate, 'MMMM d, yyyy')}` 
@@ -137,19 +136,19 @@ const PAppointments = () => {
                 {filteredAppointments.map((appointment) => (
                   <div
                     key={appointment._id}
-                    className="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow"
+                    className="bg-white rounded-lg shadow-sm p-4 sm:p-6 hover:shadow-md transition-shadow"
                   >
-                    <div className="flex justify-between items-start">
-                      <div className="space-y-2">
-                        <h3 className="text-lg font-semibold text-gray-900">
+                    <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
+                      <div className="space-y-2 w-full sm:w-auto">
+                        <h3 className="text-base sm:text-lg font-semibold text-gray-900">
                           Appointment: {formatAppointmentDateTime(appointment.appointmentDate, appointment.appointmentTime)}
                         </h3>
                         <div className="text-gray-600">
                           <p className="font-medium">Main Symptoms:</p>
-                          <p className="mt-1">{appointment.mainSymptoms}</p>
+                          <p className="mt-1 text-sm sm:text-base">{appointment.mainSymptoms}</p>
                         </div>
                         <div className="flex items-center gap-2">
-                          <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                          <span className={`px-3 py-1 rounded-full text-xs sm:text-sm font-medium ${
                             appointment.status === 'completed' ? 'bg-green-100 text-green-800' :
                             appointment.status === 'scheduled' ? 'bg-blue-100 text-blue-800' :
                             'bg-yellow-100 text-yellow-800'
@@ -158,18 +157,21 @@ const PAppointments = () => {
                           </span>
                         </div>
                       </div>
-                      <div className="flex gap-2">
+
+                      <div className="flex flex-wrap gap-2 w-full sm:w-auto">
                         {appointment.report && (
                           <button
                             onClick={() => toggleReport(appointment._id)}
-                            className="px-4 py-2 bg-gray-50 text-gray-600 rounded-lg hover:bg-gray-100 transition-colors"
+                            className="flex-1 sm:flex-none px-4 py-2 bg-gray-50 text-gray-600 rounded-lg 
+                                     hover:bg-gray-100 transition-colors text-sm sm:text-base"
                           >
                             {expandedReport === appointment._id ? 'Hide Report' : 'View Report'}
                           </button>
                         )}
                         {appointment.status === 'scheduled' && (
                           <button
-                            className="px-4 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors"
+                            className="flex-1 sm:flex-none px-4 py-2 bg-blue-50 text-blue-600 rounded-lg 
+                                     hover:bg-blue-100 transition-colors text-sm sm:text-base"
                           >
                             Reschedule
                           </button>
@@ -179,8 +181,8 @@ const PAppointments = () => {
 
                     {expandedReport === appointment._id && appointment.report && (
                       <div className="mt-4 p-4 bg-gray-50 rounded-lg animate-fadeIn">
-                        <p className="font-medium text-gray-700">Medical Report:</p>
-                        <div className="mt-2 text-gray-600 whitespace-pre-wrap">
+                        <p className="font-medium text-gray-700 text-sm sm:text-base">Medical Report:</p>
+                        <div className="mt-2 text-gray-600 whitespace-pre-wrap text-sm sm:text-base">
                           {appointment.report}
                         </div>
                       </div>

@@ -21,6 +21,7 @@ const DoctorProfile = () => {
   const token = localStorage.getItem('token');
   const decodedToken = jwtDecode(token);
   const patientId = decodedToken.user._id;
+  console.log(patientId);
 
   useEffect(() => {
     fetchProfile();
@@ -33,7 +34,7 @@ const DoctorProfile = () => {
           'Authorization': `Bearer ${token}`
         }
       });
-      
+      console.log(response.data);
       if (response.data && response.data.caregiver) {
         const doctorData = response.data.caregiver;
         const profileData = {

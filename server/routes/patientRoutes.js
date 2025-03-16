@@ -10,9 +10,9 @@ const {
 } = require('../controllers/PatientController');
 
 router.get('/',  getPatients);
-router.get('/:id', auth, getPatientById);
+router.get('/:id', getPatientById);
 router.put('/update-caregiver', updatePatientCaregiver);
-router.post('/set-disease', auth, setDisease);
-router.post('/disease', auth, createDisease);
+router.post('/set-disease', setDisease);
+router.post('/disease', createDisease);
 
 module.exports = router; 

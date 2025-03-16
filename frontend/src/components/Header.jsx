@@ -5,12 +5,19 @@ import { HiMenu, HiX } from "react-icons/hi";
 import { FiUser, FiLogOut } from "react-icons/fi";
 import { MdDashboard } from "react-icons/md";
 import { useAuth } from '../context/AuthContext';
+import { jwtDecode } from "jwt-decode";
 
 function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const navigate = useNavigate();
   const { user, logout } = useAuth();
+  const token = localStorage.getItem('token');
+  let userName = "";
+  if(token){
+  const decodedToken = jwtDecode(token);
+   userName = decodedToken.user.name;
+  }
 
   const handleLogout = () => {
     logout();
@@ -19,17 +26,17 @@ function Header() {
   };
 
   const getDashboardLink = () => {
-    if (!user) return '/dashboard';
+    if (!user) return '/';
     
     switch (user.role) {
       case "patient":
-        return "/dashboard";
+        return "/medicine";
       case "doctor":
         return "/docdashboard";
       case "admin":
-        return "/admindashboard";
+        return "/admin-dashboard";
       default:
-        return "/dashboard";
+        return "/";
     }
   };
 
@@ -83,7 +90,7 @@ function Header() {
                   className="flex items-center space-x-2 text-gray-700 hover:text-blue-500 transition-colors"
                 >
                   <FiUser className="w-5 h-5" />
-                  <span>Hi, {user.name}</span>
+                  <span>Hi, {userName}</span>
                 </button>
 
                 {/* Dropdown Menu */}

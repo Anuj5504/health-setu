@@ -73,7 +73,7 @@ const LoginForm = () => {
       } else if (formData.role === "doctor") {
         navigate("/docdashboard");
       } else {
-        navigate("/admindashboard");
+        navigate("/admin-dashboard");
       }
 
     } catch (error) {

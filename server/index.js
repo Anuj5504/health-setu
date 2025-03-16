@@ -4,14 +4,35 @@ const cors = require("cors");
 const dotenv = require("dotenv");
 const connectDB = require('./config/db');
 const nodemailer = require("nodemailer");
+const session = require('express-session');
 
 dotenv.config();
 const app = express();
 
 connectDB();
 
+// Configure CORS before other middleware
+app.use(cors({
+  origin: ['http://localhost:5000', 'http://localhost:5173'], // Allow both ports
+  credentials: true,
+  methods: ['GET', 'POST', 'OPTIONS','PUT','DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
 app.use(express.json());
-app.use(cors());
+
+// Session middleware
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'your-secret-key',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: process.env.NODE_ENV === 'production',
+    httpOnly: true,
+    sameSite: 'lax',
+    maxAge: 24 * 60 * 60 * 1000 // 24 hours
+  }
+}));
 
 console.log("Fixing nested git error");
 
@@ -23,6 +44,7 @@ app.use('/api/caregivers', require('./routes/careGiverRoutes'));
 app.use('/api/appointments', require('./routes/appoinmentRoutes'));
 app.use('/api/goals', require('./routes/goalRoutes'));
 app.use('/api/inventory',require('./routes/InventoryRoutes'));
+app.use('/api/fitbit', require('./routes/fitbitRoutes'));
 
 app.post("/api/email", async (req, res) => {
     const { to, subject, text } = req.body; 

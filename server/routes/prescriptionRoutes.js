@@ -6,13 +6,16 @@ const {
     getPrescriptionById,
     updatePrescriptionPDF,
     deletePrescription,
-    getPatientPrescriptions
+    getPatientPrescriptions,
+    getAllPrescription
 } = require('../controllers/prescriptionController');
 
 // Protected routes (require authentication)
 
 // Create new prescription
 router.post('/', createPrescription);
+
+router.get('/getallprescription', getAllPrescription);
 
 // Get all prescriptions for a doctor
 router.get('/doctor', getDoctorPrescriptions);

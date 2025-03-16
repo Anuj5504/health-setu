@@ -33,6 +33,12 @@ const sections = [
       { label: "Low Stock Items", icon: Package, href: "/admin/inventory/low-stock" ,page:"low-stock"},
     ],
   },
+  {
+    title: "Demand Forecast",
+    items: [
+      { label: "Analysis", icon: PlusSquare, href: "/admin/inventory/forecast",page:"analysis" },
+    ],
+  },
   // {
   //   title: "Analytics",
   //   items: [{ label: "Stock Analytics", icon: BarChart2, href: "/admin/inventory/stock-analytics",page:"analytics" }],

@@ -1,8 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import AdminSidebar from './Sidebar';
 import { toast } from 'react-toastify';
+import { jwtDecode } from "jwt-decode";
 
-const API_URL = import.meta.env.VITE_API_URL;
+const API_URL = 'http://localhost:5000';
+
+const getAdminIdFromToken = () => {
+  const token = localStorage.getItem('token');
+  if (!token) return null;
+
+  try {
+    const payload = jwtDecode(token);
+    return payload.user._id;
+  } catch (error) {
+    console.error('Error parsing token:', error);
+    return null;
+  }
+};
 
 const InventoryDashboard = () => {
   const [collapsed, setCollapsed] = useState(false);
@@ -34,7 +48,20 @@ const InventoryDashboard = () => {
 
   const fetchInventory = async () => {
     try {
-      const response = await fetch(`${API_URL}/api/inventory/`);
+      const adminId = getAdminIdFromToken();
+      if (!adminId) {
+        setError('Authentication error');
+        return;
+      }
+
+      const response = await fetch(`${API_URL}/api/inventory/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ adminId })
+      });
+
       if (!response.ok) throw new Error('Failed to fetch inventory');
       const data = await response.json();
       setItems(data);
@@ -95,32 +122,23 @@ const InventoryDashboard = () => {
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
-  const fetchItems = async () => {
-    try {
-      const response = await fetch(`${API_URL}/api/inventory/`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch items');
-      }
-      const data = await response.json();
-      setItems(data);
-      console.log(data)
-    } catch (error) {
-      setError('Failed to load items');
-      console.error('Error:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleDelete = async (itemId) => {
     if (!window.confirm('Are you sure you want to delete this item?')) return;
 
     try {
+      const adminId = getAdminIdFromToken();
+      if (!adminId) {
+        toast.error("Authentication error");
+        return;
+      }
+
       const response = await fetch(`${API_URL}/api/inventory/delete/${itemId}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json'
-        }
+        },
+        body: JSON.stringify({ adminId })
       });
 
       if (!response.ok) {
@@ -128,9 +146,8 @@ const InventoryDashboard = () => {
         throw new Error(errorData.message || 'Failed to delete item');
       }
 
-      const data = await response.json();
       toast.success('Item deleted successfully');
-      fetchItems();
+      await fetchInventory();
     } catch (error) {
       console.error('Error deleting item:', error);
       toast.error('Error deleting item');
@@ -146,14 +163,21 @@ const InventoryDashboard = () => {
     setUpdateLoading(true);
 
     try {
+      const adminId = getAdminIdFromToken();
+      if (!adminId) {
+        toast.error("Authentication error");
+        return;
+      }
+
       const response = await fetch(`${API_URL}/api/inventory/update/${editingItem._id}`, {
         method: 'PUT',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           quantity: parseInt(editingItem.quantity),
-          reorderLevel: parseInt(editingItem.reorderLevel)
+          reorderLevel: parseInt(editingItem.reorderLevel),
+          adminId
         })
       });
 
@@ -162,9 +186,8 @@ const InventoryDashboard = () => {
         throw new Error(errorData.message || 'Failed to update item');
       }
 
-      const data = await response.json();
       toast.success('Item updated successfully');
-      await fetchItems();
+      await fetchInventory();
       setEditingItem(null);
     } catch (error) {
       toast.error('Error updating item');

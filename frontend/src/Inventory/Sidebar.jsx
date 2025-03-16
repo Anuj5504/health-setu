@@ -18,6 +18,7 @@ import clsx from "clsx";
 import { HiOutlineUserCircle } from "react-icons/hi";
 import { Link } from "react-router-dom";
 import { BiHome, BiAddToQueue, BiError, BiChart } from "react-icons/bi";
+import { FaExchangeAlt } from "react-icons/fa";
 
 const sections = [
   {
@@ -50,7 +51,7 @@ export default function AdminSidebar({collapsed,setCollapsed, currentPage}) {
   return (
     <nav
   className={clsx(
-    "fixed top-0 left-0 ] h-screen p-4 flex flex-col justify-between transition-all duration-300 shadow-lg overflow-y-auto",
+    "fixed top-0 left-0 h-screen p-4 flex flex-col justify-between transition-all duration-300 shadow-lg bg-white z-20",
     collapsed ? "w-20" : "w-64"
   )}
 >
@@ -119,6 +120,13 @@ export default function AdminSidebar({collapsed,setCollapsed, currentPage}) {
               ))}
             </div>
           ))}
+
+          <Link to="/admin/inventory/distributions">
+            <li className="cursor-pointer flex items-center p-2 rounded-md hover:bg-blue-500 transition-transform duration-300 transform hover:scale-105">
+              <FaExchangeAlt className="w-6 h-6" />
+              {!collapsed && <span className="ml-3">Distributions</span>}
+            </li>
+          </Link>
         </ul>
       </div>
 

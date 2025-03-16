@@ -1,25 +1,25 @@
 const mongoose = require('mongoose');
 
 const HealthproSchema = new mongoose.Schema({
-    name:{
+    name: {
         type: String,
         required: true
     },
-    email:{
+    email: {
         type: String,
         required: true
     },
-    password:{
+    password: {
         type: String,
         required: true
     },
-    mobileno:{
+    mobileno: {
         type: Number,
     },
-    address:{
+    address: {
         type: String,
     },
-    city:{
+    city: {
         type: String,
     },
     family: [{

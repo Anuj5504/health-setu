@@ -20,7 +20,7 @@ import StockAnalytics from "./Inventory/StockAnalytics";
 import AboutPage from "./pages/AboutPage";
 import ContactPage from "./pages/ContactPage";
 import Appointments from './DoctorDashboard/Appointments';
-import  PAppointments from './pages/PAppointments';
+import PAppointments from './pages/PAppointments';
 import FitbitData from './pages/FitbitData';
 import DoctorProfile from './pages/DoctorProfile';
 import Medicine from './pages/Medicine';
@@ -31,6 +31,7 @@ import Prescription from "./PatientInfoDoc/Prescriptions";
 import PatientPrescriptions from './pages/PatientPrescriptions';
 import DemandForecast from "./Inventory/DemandForecast";
 import ReportAI from "./pages/ReportAI";
+import Distributions from './pages/Distributions';
 
 const App = () => {
   const [loading, setLoading] = useState(true);
@@ -58,7 +59,7 @@ const App = () => {
             <Route path="/doc-patients-health/:id" element={<DocPatientshealth />} />
             <Route path="/login" element={<LoginForm />} />
             <Route path="/register" element={<Signup />} />
-            <Route path="/about" element={<AboutPage/>} />
+            <Route path="/about" element={<AboutPage />} />
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/talk" element={<TalkAI />} />
             <Route path="/appointments" element={<Appointments />} />
@@ -70,6 +71,7 @@ const App = () => {
             <Route path="/admin/inventory/low-stock" element={<LowStockItems />} />
             <Route path="/admin/inventory/stock-analytics" element={<StockAnalytics />} />
             <Route path="/admin/inventory/forecast" element={<DemandForecast />} />
+            <Route path="/admin/inventory/distributions" element={<Distributions />} />
 
             <Route path="/PAppointments" element={<PAppointments />} />
             <Route path="/fitbit-data" element={<FitbitData />} />

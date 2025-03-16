@@ -1,8 +1,22 @@
 import React, { useState } from "react";
 import AdminSidebar from "./Sidebar";
 import { toast } from "react-toastify";
+import { jwtDecode } from "jwt-decode";
 
-const API_URL = import.meta.env.VITE_API_URL;
+const API_URL = 'http://localhost:5000';
+
+const getAdminIdFromToken = () => {
+    const token = localStorage.getItem('token');
+    if (!token) return null;
+
+    try {
+        const payload = jwtDecode(token)
+        return payload.user._id; // Assuming the admin ID is stored as 'id' in the token payload
+    } catch (error) {
+        console.error('Error parsing token:', error);
+        return null;
+    }
+};
 
 const AddItems = () => {
     const [collapsed, setCollapsed] = useState(false);
@@ -28,28 +42,41 @@ const AddItems = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true);
 
         try {
+            const adminId = getAdminIdFromToken();
+            if (!adminId) {
+                toast.error("Authentication error");
+                return;
+            }
+
             const response = await fetch(`${API_URL}/api/inventory/create`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify(formData)
+                body: JSON.stringify({
+                    ...formData,
+                    adminId
+                })
             });
 
             if (!response.ok) {
                 const text = await response.text();
                 console.error("Server error:", text);
+                toast.error("Failed to add item");
                 throw new Error("Server returned an error");
-                toast.error("Items not added")
             }
 
             const data = await response.json();
-            toast.success("Items added successfully")
-            console.log("Form submitted:", data);
+            toast.success("Item added successfully");
+            handleReset();
         } catch (error) {
             console.error("Submission error:", error);
+            toast.error("Error adding item");
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -67,8 +94,8 @@ const AddItems = () => {
     return (
         <div className="flex h-screen w-screen mt-14">
             <div className="w-64 bg-white shadow h-full">
-                <AdminSidebar 
-                    collapsed={collapsed} 
+                <AdminSidebar
+                    collapsed={collapsed}
                     setCollapsed={setCollapsed}
                     currentPage="add-items"
                 />
